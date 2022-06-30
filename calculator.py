@@ -4,29 +4,40 @@ root = Tk()
 root.title('Calculator')
 
 entry = Entry(root, justify='right', font="Calibri 25")
-entry.grid(row=0, column=0, columnspan=4)
+entry.grid(row=0, column=0, columnspan=4, pady=15)
 entry.focus_force()
 
-def clear():
-    entry.delete(0, END)
-
-def chars(char):
+def disable(get):
     global answer
-    get = entry.get() + char
+
     s = get.replace('÷', '/')
     s = s.replace('x', '*')
     s = s.replace('^', '**')
     s = s.replace('%', '/100')
-    if s != s.replace('√(', ''):
+    if s != s.replace('√(', '('):
         s = s.replace('√(', '(')
         s = s.replace(')', '**(1/2))')
-    print(s)
     try:
         answer = eval(s)
     except:
         button_equal = Button(root, text='=', font="Calibri 13", width=8, command=equal, state='disabled').grid(row=6,column=3)
     else:
         button_equal = Button(root, text='=', font="Calibri 13", width=8, command=equal, state='normal').grid(row=6,column=3)
+
+def clear():
+    entry.delete(0, END)
+
+def back():
+    get = ''.join(list(entry.get())[:-1])
+    disable(get)
+    entry.delete(0, END)
+    entry.insert(0, get)
+
+def chars(char):
+    if char == '0' and len(entry.get()) == 0:
+        char = ''
+    get = entry.get() + char
+    disable(get)
     entry.delete(0, END)
     entry.insert(0, get)
 
@@ -36,7 +47,7 @@ def equal():
     entry.insert(0, answer)
 
 button_c = Button(root, text='C', font="Calibri 13", width=8, bg='#65fe08', command=clear).grid(row=1,column=0)
-button_b = Button(root, text='B', font="Calibri 13", width=8).grid(row=1,column=1)
+button_b = Button(root, text='B', font="Calibri 13", width=8, command=back).grid(row=1,column=1)
 button_bracket1 = Button(root, text='(', font="Calibri 13", width=8, command=lambda: chars('(')).grid(row=1,column=2)
 button_bracket2 = Button(root, text=')', font="Calibri 13", width=8, command=lambda: chars(')')).grid(row=1,column=3)
 
@@ -60,9 +71,9 @@ button_0 = Button(root, text='0', font="Calibri 13", width=8, command=lambda: ch
 button_decimal = Button(root, text='.', font="Calibri 13", width=8, command=lambda: chars('.')).grid(row=5,column=2)
 button_add = Button(root, text='+', font="Calibri 13", width=8, command=lambda: chars('+')).grid(row=5,column=3)
 
-button_equal = Button(root, text='√', font="Calibri 13", width=8, command=lambda: chars('√(')).grid(row=6,column=0)
-button_equal = Button(root, text='1/x', font="Calibri 13", width=8, command=lambda: chars('(1/')).grid(row=6,column=1)
-button_equal = Button(root, text='%', font="Calibri 13", width=8, command=lambda: chars('%')).grid(row=6,column=2)
+button_squareroot = Button(root, text='√', font="Calibri 13", width=8, command=lambda: chars('√(')).grid(row=6,column=0)
+button_divdeby1 = Button(root, text='1/x', font="Calibri 13", width=8, command=lambda: chars('(1/')).grid(row=6,column=1)
+button_percent = Button(root, text='%', font="Calibri 13", width=8, command=lambda: chars('%')).grid(row=6,column=2)
 button_equal = Button(root, text='=', font="Calibri 13", width=8, command=equal, state='disabled').grid(row=6,column=3)
 
 root.mainloop()
