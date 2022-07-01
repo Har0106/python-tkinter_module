@@ -38,7 +38,7 @@ def back():
 
 # to put the entered characters to the screen
 def chars(char):
-    if char == '0' and len(entry.get()) == 0:
+    if (char in ['0', '÷', 'x', '+', '%', '^2', ')']) and len(entry.get()) == 0:
         char = ''
     get = entry.get() + char
     disable(get)
