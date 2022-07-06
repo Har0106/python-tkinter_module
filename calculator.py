@@ -21,9 +21,9 @@ def disable(get):
         answer = eval(s)
     # to disable and enable equal button
     except:
-        Button(root, text='=', font="Calibri 13", width=7, command=equal, state='disabled', bg='#808080').grid(row=6,column=3)
+        button_c['state'] = DISABLED
     else:
-        Button(root, text='=', font="Calibri 13", width=7, command=equal, state='normal', bg='#808080').grid(row=6,column=3)
+        button_c['state'] = NORMAL
 
 # to clear the scree of calculator
 def clear():
@@ -80,6 +80,7 @@ Button(root, text='+', font="Calibri 13", width=7, command=lambda: chars('+')).g
 Button(root, text='√', font="Calibri 13", width=7, command=lambda: chars('√(')).grid(row=6,column=0)
 Button(root, text='1/x', font="Calibri 13", width=7, command=lambda: chars('(1/')).grid(row=6,column=1)
 Button(root, text='%', font="Calibri 13", width=7, command=lambda: chars('%')).grid(row=6,column=2)
-Button(root, text='=', font="Calibri 13", width=7, command=equal, state='disabled', bg='#808080').grid(row=6,column=3)
+button_c = Button(root, text='=', font="Calibri 13", width=7, command=equal, state='disabled', bg='#808080')
+button_c.grid(row=6,column=3)
 
 root.mainloop()
