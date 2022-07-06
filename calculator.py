@@ -53,7 +53,7 @@ def equal():
 
 # Design
 Button(root, text='C', font="Calibri 13", width=7, command=clear).grid(row=1,column=0)
-Button(root, text='B', font="Calibri 13", width=7, command=back).grid(row=1,column=1)
+Button(root, text='BS', font="Calibri 13", width=7, command=back).grid(row=1,column=1)
 Button(root, text='(', font="Calibri 13", width=7, command=lambda: chars('(')).grid(row=1,column=2)
 Button(root, text=')', font="Calibri 13", width=7, command=lambda: chars(')')).grid(row=1,column=3)
 
