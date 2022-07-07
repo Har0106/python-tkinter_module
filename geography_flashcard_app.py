@@ -1,3 +1,4 @@
+from operator import index
 from tkinter import *
 from PIL import Image, ImageTk
 import random
@@ -21,15 +22,21 @@ def hide_frames():
     state_frame.grid_forget()
     state_capitals_frame.grid_forget()
 
+def random_state(frame):
+    global state
+    global image
+    global index
+
+    states_list = ['alaska', 'arizona', 'california', 'colorado', 'florida', 'hawaii', 'massachusetts', 'michigan', 'montana', 'new_jersey', 'ohio', 'pennsylvania', 'texas', 'virginia', 'washington']
+    state = random.choice(states_list)
+    index = states_list.index(state)
+    image = ImageTk.PhotoImage(Image.open(f'states/{state}.jpg').resize((250, 250)))
+    Label(frame, image=image).grid(row=0, column=0, pady=20, padx=100, columnspan=2)
+
 def states():
     hide_frames()
     state_frame.pack(fill='both', expand=1)
-    global state
-    global image
-    states_list = ['alaska', 'arizona', 'california', 'colorado', 'florida', 'hawaii', 'massachusetts', 'michigan', 'montana', 'new_jersey', 'ohio', 'pennsylvania', 'texas', 'virginia', 'washington']
-    state = random.choice(states_list)
-    image = ImageTk.PhotoImage(Image.open(f'states/{state}.jpg').resize((250, 250)))
-    Label(state_frame, image=image).grid(row=0, column=0, pady=20, padx=100, columnspan=2)
+    random_state(state_frame)
 
     global entry
     entry = Entry(state_frame, font='Arial 15')
@@ -45,6 +52,14 @@ def states():
 def state_capitals():
     hide_frames()
     state_capitals_frame.pack(fill='both', expand=1)
+    random_state(state_capitals_frame)
+    state_capitals_list = ['Juneau', 'Phoenix', 'Sacramento', 'Denver', 'Tallahassee', 'Honolulu', 'Boston', 'Lansing', 'Helena', 'Trenton', 'Columbus', 'Harrisburg', 'Austin', 'Richmond', 'Olympia']
+    capital = state_capitals_list[index]
+
+    first_two = [i for i in random.sample(state_capitals_list, k=3) if i != capital]
+    if len(first_two) == 3:
+        first_two = first_two[:-1]
+    choices = random.sample(first_two + [capital], k=3), capital
 
 menu = Menu(root)
 root.config(menu=menu)
