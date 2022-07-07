@@ -1,7 +1,8 @@
-from operator import index
 from tkinter import *
 from PIL import Image, ImageTk
 import random
+
+from numpy import var
 
 root = Tk()
 root.title('Geography Flash Card')
@@ -59,7 +60,16 @@ def state_capitals():
     first_two = [i for i in random.sample(state_capitals_list, k=3) if i != capital]
     if len(first_two) == 3:
         first_two = first_two[:-1]
-    choices = random.sample(first_two + [capital], k=3), capital
+    choices = random.sample(first_two + [capital], k=3) + [capital]
+
+    global choosed
+    choosed = IntVar()
+    radio_button1 = Radiobutton(state_capitals_frame, text=choices[0], font='Arial 13', variable=choosed, value=1).grid(row=1, column=0, columnspan=2)
+    radio_button2 = Radiobutton(state_capitals_frame, text=choices[1], font='Arial 13', variable=choosed, value=2).grid(row=2, column=0, columnspan=2)
+    radio_button3 = Radiobutton(state_capitals_frame, text=choices[2], font='Arial 13', variable=choosed, value=3).grid(row=3, column=0, columnspan=2, pady=(0, 10))
+
+    Button(state_capitals_frame, text='Submit', font='Arial 13').grid(pady=10, row=4, column=0, sticky='e', padx=5)
+    Button(state_capitals_frame, text='Next', font='Arial 13', command=state_capitals).grid(pady=10, row=4, column=1, sticky='w', padx=5)
 
 menu = Menu(root)
 root.config(menu=menu)
