@@ -2,18 +2,23 @@ from tkinter import *
 from PIL import Image, ImageTk
 import random
 
-from numpy import var
-
 root = Tk()
 root.title('Geography Flash Card')
 
-def answer():
+def state_answer():
     answer = state.replace('_', ' ').title()
     if answer == entry.get().title():
         text = 'Correct!'
     else:
         text = f'Incorrect!'
-    label.configure(text=text)
+    state_label.configure(text=text)
+
+def state_capitals_answer():
+    if capital == choosed.get():
+        text = 'Correct!'
+    else:
+        text = f'Incorrect!'
+    state_capitals_label.configure(text=text)
 
 def hide_frames():
     for widget in state_frame.winfo_children():
@@ -43,17 +48,19 @@ def states():
     entry = Entry(state_frame, font='Arial 15')
     entry.grid(pady=10, row=1, column=0, columnspan=2)
 
-    Button(state_frame, text='Submit', font='Arial 13', command=answer).grid(pady=10, row=2, column=0, sticky='e', padx=5)
+    Button(state_frame, text='Submit', font='Arial 13', command=state_answer).grid(pady=10, row=2, column=0, sticky='e', padx=5)
     Button(state_frame, text='Next', font='Arial 13', command=states).grid(pady=10, row=2, column=1, sticky='w', padx=5)
 
-    global label
-    label = Label(state_frame, text='', font='Arial 15', width=16)
-    label.grid(pady=10, row=3, column=0, columnspan=2)
+    global state_label
+    state_label = Label(state_frame, text='', font='Arial 15', width=16)
+    state_label.grid(pady=10, row=3, column=0, columnspan=2)
 
 def state_capitals():
     hide_frames()
     state_capitals_frame.pack(fill='both', expand=1)
     random_state(state_capitals_frame)
+
+    global capital
     state_capitals_list = ['Juneau', 'Phoenix', 'Sacramento', 'Denver', 'Tallahassee', 'Honolulu', 'Boston', 'Lansing', 'Helena', 'Trenton', 'Columbus', 'Harrisburg', 'Austin', 'Richmond', 'Olympia']
     capital = state_capitals_list[ind]
 
@@ -63,13 +70,18 @@ def state_capitals():
     choices = random.sample(first_two + [capital], k=3) + [capital]
 
     global choosed
-    choosed = IntVar()
-    radio_button1 = Radiobutton(state_capitals_frame, text=choices[0], font='Arial 13', variable=choosed, value=1).grid(row=1, column=0, columnspan=2)
-    radio_button2 = Radiobutton(state_capitals_frame, text=choices[1], font='Arial 13', variable=choosed, value=2).grid(row=2, column=0, columnspan=2)
-    radio_button3 = Radiobutton(state_capitals_frame, text=choices[2], font='Arial 13', variable=choosed, value=3).grid(row=3, column=0, columnspan=2, pady=(0, 10))
+    choosed = StringVar()
+    choosed.set(choices[0])
+    Radiobutton(state_capitals_frame, text=choices[0], font='Arial 13', variable=choosed, value=choices[0]).grid(row=1, column=0, columnspan=2)
+    Radiobutton(state_capitals_frame, text=choices[1], font='Arial 13', variable=choosed, value=choices[1]).grid(row=2, column=0, columnspan=2)
+    Radiobutton(state_capitals_frame, text=choices[2], font='Arial 13', variable=choosed, value=choices[2]).grid(row=3, column=0, columnspan=2, pady=(0, 10))
 
-    Button(state_capitals_frame, text='Submit', font='Arial 13').grid(pady=10, row=4, column=0, sticky='e', padx=5)
+    Button(state_capitals_frame, text='Submit', font='Arial 13', command=state_capitals_answer).grid(pady=10, row=4, column=0, sticky='e', padx=5)
     Button(state_capitals_frame, text='Next', font='Arial 13', command=state_capitals).grid(pady=10, row=4, column=1, sticky='w', padx=5)
+
+    global state_capitals_label
+    state_capitals_label = Label(state_capitals_frame, text='', font='Arial 15', width=16)
+    state_capitals_label.grid(pady=10, row=5, column=0, columnspan=2)
 
 menu = Menu(root)
 root.config(menu=menu)
