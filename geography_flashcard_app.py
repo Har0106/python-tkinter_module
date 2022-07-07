@@ -19,17 +19,17 @@ def hide_frames():
         widget.destroy()
     for widget in state_capitals_frame.winfo_children():
         widget.destroy()
-    state_frame.grid_forget()
-    state_capitals_frame.grid_forget()
+    state_frame.pack_forget()
+    state_capitals_frame.pack_forget()
 
 def random_state(frame):
     global state
     global image
-    global index
+    global ind
 
     states_list = ['alaska', 'arizona', 'california', 'colorado', 'florida', 'hawaii', 'massachusetts', 'michigan', 'montana', 'new_jersey', 'ohio', 'pennsylvania', 'texas', 'virginia', 'washington']
     state = random.choice(states_list)
-    index = states_list.index(state)
+    ind = states_list.index(state)
     image = ImageTk.PhotoImage(Image.open(f'states/{state}.jpg').resize((250, 250)))
     Label(frame, image=image).grid(row=0, column=0, pady=20, padx=100, columnspan=2)
 
@@ -54,7 +54,7 @@ def state_capitals():
     state_capitals_frame.pack(fill='both', expand=1)
     random_state(state_capitals_frame)
     state_capitals_list = ['Juneau', 'Phoenix', 'Sacramento', 'Denver', 'Tallahassee', 'Honolulu', 'Boston', 'Lansing', 'Helena', 'Trenton', 'Columbus', 'Harrisburg', 'Austin', 'Richmond', 'Olympia']
-    capital = state_capitals_list[index]
+    capital = state_capitals_list[ind]
 
     first_two = [i for i in random.sample(state_capitals_list, k=3) if i != capital]
     if len(first_two) == 3:
