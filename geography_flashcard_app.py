@@ -8,7 +8,7 @@ root.title('Geography Flash Card App')
 global usa_image
 global usa
 global home_label
-usa_image = ImageTk.PhotoImage(Image.open('states/USA.jpg'))
+usa_image = ImageTk.PhotoImage(Image.open('geography_flashcard_app/USA.jpg'))
 usa = Label(root, image=usa_image)
 home_label = Label(root, text='Study The States of USA\nWith Geography Flash Card App', font='Arial 15', justify='center')
 usa.pack()
@@ -47,7 +47,7 @@ def random_state(frame):
     states_list = ['alaska', 'arizona', 'california', 'colorado', 'florida', 'hawaii', 'massachusetts', 'michigan', 'montana', 'new_jersey', 'ohio', 'pennsylvania', 'texas', 'virginia', 'washington']
     state = random.choice(states_list)
     ind = states_list.index(state)
-    image = ImageTk.PhotoImage(Image.open(f'states/{state}.jpg').resize((250, 250)))
+    image = ImageTk.PhotoImage(Image.open(f'geography_flashcard_app/{state}.jpg').resize((250, 250)))
     Label(frame, image=image).grid(row=0, column=0, pady=20, padx=100, columnspan=2)
 
 def home():

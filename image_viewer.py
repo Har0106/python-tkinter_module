@@ -4,11 +4,11 @@ from PIL import ImageTk, Image
 root = Tk()
 root.title('Image Viewer')
 
-image1 = ImageTk.PhotoImage(Image.open('images/python_icon.jpg').resize((450,250)))
-image2 = ImageTk.PhotoImage(Image.open('images/programming_languages.jpeg').resize((450,250)))
-image3 = ImageTk.PhotoImage(Image.open('images/computer.jpg').resize((450,250)))
-image4 = ImageTk.PhotoImage(Image.open('images/coding_icon.png').resize((450,250)))
-image5 = ImageTk.PhotoImage(Image.open('images/artificial_intelligence.jpg').resize((450,250)))
+image1 = ImageTk.PhotoImage(Image.open('image_viewer/python_icon.jpg').resize((450,250)))
+image2 = ImageTk.PhotoImage(Image.open('image_viewer/programming_languages.jpeg').resize((450,250)))
+image3 = ImageTk.PhotoImage(Image.open('image_viewer/computer.jpg').resize((450,250)))
+image4 = ImageTk.PhotoImage(Image.open('image_viewer/coding_icon.png').resize((450,250)))
+image5 = ImageTk.PhotoImage(Image.open('image_viewer/artificial_intelligence.jpg').resize((450,250)))
 images = [image1, image2, image3, image4, image5]
 
 image = Label(image=image1)
