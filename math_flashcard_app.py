@@ -38,10 +38,11 @@ def answers(symbol):
     if symbol == 'x':
         symbol = '*'
     try:
-        if eval(str(num1) + symbol + str(num2)) == int(entry.get()):
+        ans = eval(str(num1) + symbol + str(num2))
+        if ans == int(entry.get()):
             text = 'Correct!'
         else:
-            text = 'Incorrect!'
+            text = f'Incorrect! The Answer is {ans}'
         op_label.configure(text=text)
     except:
         messagebox.showerror('Error', 'Invalid Number Entered')
@@ -63,7 +64,7 @@ def operations(operation, frame, func):
     Button(frame, font='Arial 13', text='Next', command=func).grid(padx=10, pady=(0, 20), row=2, column=2, columnspan=2, sticky='w')
 
     global op_label
-    op_label = Label(frame, font='Arial 15', text='')
+    op_label = Label(frame, font='Arial 15', text='', width=30)
     op_label.grid(pady=(10, 20), columnspan=4)
 
 def additon():

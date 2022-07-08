@@ -19,14 +19,14 @@ def state_answer():
     if answer == entry.get().title():
         text = 'Correct!'
     else:
-        text = f'Incorrect!'
+        text = f'Incorrect! The Correct Answer is {answer}'
     state_label.configure(text=text)
 
 def state_capitals_answer():
     if capital == choosed.get():
         text = 'Correct!'
     else:
-        text = f'Incorrect!'
+        text = f'Incorrect! The Correct Answer is {capital}'
     state_capitals_label.configure(text=text)
 
 def hide_frames():
@@ -68,7 +68,7 @@ def states():
     Button(state_frame, text='Next', font='Arial 13', command=states).grid(pady=10, row=2, column=1, sticky='w', padx=5)
 
     global state_label
-    state_label = Label(state_frame, text='', font='Arial 15', width=16)
+    state_label = Label(state_frame, text='', font='Arial 15', width=50)
     state_label.grid(pady=10, row=3, column=0, columnspan=2)
 
 def state_capitals():
@@ -96,7 +96,7 @@ def state_capitals():
     Button(state_capitals_frame, text='Next', font='Arial 13', command=state_capitals).grid(pady=10, row=4, column=1, sticky='w', padx=5)
 
     global state_capitals_label
-    state_capitals_label = Label(state_capitals_frame, text='', font='Arial 15', width=16)
+    state_capitals_label = Label(state_capitals_frame, text='', font='Arial 15', width=50)
     state_capitals_label.grid(pady=10, row=5, column=0, columnspan=2)
 
 menu = Menu(root)
