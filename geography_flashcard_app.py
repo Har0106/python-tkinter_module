@@ -3,7 +3,16 @@ from PIL import Image, ImageTk
 import random
 
 root = Tk()
-root.title('Geography Flash Card')
+root.title('Geography Flash Card App')
+
+global usa_image
+global usa
+global home_label
+usa_image = ImageTk.PhotoImage(Image.open('states/USA.jpg'))
+usa = Label(root, image=usa_image)
+home_label = Label(root, text='Study The States of USA\nWith Geography Flash Card App', font='Arial 15', justify='center')
+usa.pack()
+home_label.pack(pady=20)
 
 def state_answer():
     answer = state.replace('_', ' ').title()
@@ -25,6 +34,8 @@ def hide_frames():
         widget.destroy()
     for widget in state_capitals_frame.winfo_children():
         widget.destroy()
+    usa.pack_forget()
+    home_label.pack_forget()
     state_frame.pack_forget()
     state_capitals_frame.pack_forget()
 
@@ -38,6 +49,11 @@ def random_state(frame):
     ind = states_list.index(state)
     image = ImageTk.PhotoImage(Image.open(f'states/{state}.jpg').resize((250, 250)))
     Label(frame, image=image).grid(row=0, column=0, pady=20, padx=100, columnspan=2)
+
+def home():
+    hide_frames()
+    usa.pack()
+    home_label.pack(pady=20)
 
 def states():
     hide_frames()
@@ -86,10 +102,15 @@ def state_capitals():
 menu = Menu(root)
 root.config(menu=menu)
 
-state = Menu(menu)
-menu.add_cascade(label='State', menu=state)
-state.add_command(label='States', command=states)
-state.add_command(label='State Capitals', command=state_capitals)
+app = Menu(menu)
+menu.add_cascade(label='App', menu=app)
+app.add_command(label='Home', command=home)
+app.add_command(label='Exit', command=root.destroy)
+
+geography = Menu(menu)
+menu.add_cascade(label='Geography', menu=geography)
+geography.add_command(label='States', command=states)
+geography.add_command(label='State Capitals', command=state_capitals)
 
 state_frame = Frame(root)
 state_capitals_frame = Frame(root)
