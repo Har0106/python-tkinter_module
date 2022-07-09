@@ -24,7 +24,7 @@ def word():
 
 def submit():
     global submit_label
-    if entry.get().lower() == w:
+    if entry.get().upper() == w:
         result = 'You Won!'
     else:
         result = f'You Lost!\nThe Word is {w.capitalize()}.'
