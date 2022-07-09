@@ -10,14 +10,15 @@ def gen_set():
     voices = engine.getProperty('voices')
     engine.setProperty('voice', voices[gen.get()].id)
 
-def speak():
-    gen_set()
-    engine.say(entry.get())
-    engine.runAndWait()
-
 def save():
     gen_set()
     engine.save_to_file(entry.get(), entry_filename.get()+'.mp3')
+    Label(root, text='Saved!', font='Arial 15').grid(row=6, column=0, columnspan=2, pady=(10, 20))
+    engine.runAndWait()
+
+def speak():
+    gen_set()
+    engine.say(entry.get())
     engine.runAndWait()
 
 Label(root, text='Speak!', font='Arial 25').grid(row=0, column=0, columnspan=2, pady=10)
