@@ -23,17 +23,18 @@ global sound
 sound = ''
 
 def play_sound(event):
-    global sound
-    try:
-        sound.stop()
-    except:
-        pass
     sel = listboxes.curselection()
-    for i,a in songs:
-        if listboxes.get(0, END)[sel[0]] == a:
-            print(i)
-            sound = pygame.mixer.Sound(i)
-            sound.play()
+    if sel:
+        global sound
+        try:
+            sound.stop()
+        except:
+            pass
+        for i,a in songs:
+            if listboxes.get(0, END)[sel[0]] == a:
+                print(i)
+                sound = pygame.mixer.Sound(i)
+                sound.play()
 
 listboxes = Listbox(root, width=40, font='Arial 15')
 listboxes.grid(row=0, column=0, columnspan=3, padx=25, pady=(20, 15))
