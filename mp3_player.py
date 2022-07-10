@@ -9,6 +9,9 @@ mixer.init()
 global sound
 sound = None
 
+global songs
+songs = []
+
 def disabel_normal():
     if listboxes.get(0, END)[-1] == listboxes.get(0, END)[sel]:
        forward_button.configure(state='disabled')
@@ -22,9 +25,14 @@ def disabel_normal():
 def add_song():
     global songs
     path = filedialog.askopenfilenames(filetypes=[('mp3 files', '*.mp3')])
-    songs = [[i, i.split('/')[-1]] for i in path]
+    songs += [[i, i.split('/')[-1]] for i in path]
     for i,a in songs:
-        listboxes.insert(END, a)
+        if a not in listboxes.get(0, END):
+            listboxes.insert(END, a)
+    if len(listboxes.get(0, END)) > 1:
+       forward_button.configure(state='normal')
+    else:
+       forward_button.configure(state='disabled')
 
 def play_pause():
     if mid.cget('text') == u"\u25B6":
@@ -66,11 +74,11 @@ listboxes = Listbox(root, width=40, font='Arial 15', activestyle='none')
 listboxes.grid(row=0, column=0, columnspan=3, padx=25, pady=(20, 15))
 listboxes.bind('<<ListboxSelect>>', get_sound)
 
-backward_button = Button(root, text=u'\u23EE', font='Arial 20', bd=0, command=lambda: forward_backward(0))
+backward_button = Button(root, text=u'\u23EE', font='Arial 20', bd=0, command=lambda: forward_backward(0), state='disabled')
 backward_button.grid(row=1, column=0, pady=(0, 10), sticky='e')
 mid = Button(root, text=u"\u25B6", font='Arial 20', bd=0, command=play_pause)
 mid.grid(row=1, column=1, pady=(0, 10))
-forward_button = Button(root, text=u'\u23ED', font='Arial 20', bd=0, command=lambda: forward_backward(1))
+forward_button = Button(root, text=u'\u23ED', font='Arial 20', bd=0, command=lambda: forward_backward(1), state='disabled')
 forward_button.grid(row=1, column=2, pady=(0, 10), sticky='w')
 
 menu = Menu(root)
