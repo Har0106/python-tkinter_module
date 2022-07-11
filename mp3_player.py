@@ -6,10 +6,7 @@ root = Tk()
 root.title('MP3 Player')
 mixer.init()
 
-global sound
 sound = None
-
-global songs
 songs = []
 
 def disabel_normal():
@@ -29,25 +26,35 @@ def add_song():
     for i,a in songs:
         if a not in listboxes.get(0, END):
             listboxes.insert(END, a)
-    if len(listboxes.get(0, END)) > 1:
-       forward_button.configure(state='normal')
-    else:
-       forward_button.configure(state='disabled')
+    if listboxes.curselection():
+        if len(listboxes.get(0, END)) > 1:
+            forward_button.configure(state='normal')
+        else:
+            forward_button.configure(state='disabled')
 
-def play_pause():
-    if mid.cget('text') == u"\u25B6":
-        mid.configure(text=u'\u23F8')
-        mixer.pause()
-    else:
-        mid.configure(text=u"\u25B6")
-        mixer.unpause()
+def delete_songs():
+    for i in songs:
+        if listboxes.get(ANCHOR) in i:
+            songs.remove(i)
+    listboxes.delete(ANCHOR)
+    if listboxes.curselection():
+        listboxes.selection_clear(listboxes.curselection()[0])
+    forward_button.configure(state='disable')
+    backward_button.configure(state='disable')
+    sound.stop()
+
+def clear_songs():
+    global songs
+    listboxes.delete(0, END)
+    songs = []
+    forward_button.configure(state='disable')
+    backward_button.configure(state='disable')
+    sound.stop()
 
 def play_sound():
     global sound
-    try:
+    if sound:
         sound.stop()
-    except:
-        pass
     for i,a in songs:
         if listboxes.get(0, END)[sel] == a:
             sound = mixer.Sound(i)
@@ -58,6 +65,14 @@ def get_sound(event):
     sel = listboxes.curselection()[0]
     disabel_normal()
     play_sound()
+
+def play_pause():
+    if mid.cget('text') == u"\u25B6":
+        mid.configure(text=u'\u23F8')
+        mixer.pause()
+    else:
+        mid.configure(text=u"\u25B6")
+        mixer.unpause()
 
 def forward_backward(v):
     global sel
@@ -91,6 +106,7 @@ player.add_command(label='Exit', command=root.destroy)
 edit_playlist = Menu(menu)
 menu.add_cascade(label='Edit Playlist', menu=edit_playlist)
 edit_playlist.add_command(label='Add', command=add_song)
-edit_playlist.add_command(label='Remove')
+edit_playlist.add_command(label='Remove', command=delete_songs)
+edit_playlist.add_command(label='Clear', command=clear_songs)
 
 root.mainloop()
