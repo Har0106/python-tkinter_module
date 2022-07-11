@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import filedialog
 
 root = Tk()
 root.title('Untiled - Notepad')
@@ -9,6 +10,21 @@ frame.pack()
 def new():
     text.delete(1.0, END)
     root.title('Untiled - Notepad')
+
+def open_file():
+    file_name = filedialog.askopenfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
+    text.delete(1.0, END)
+    name = file_name.split('/')[-1]
+    root.title(f'{name} - Notepad')
+    with open(file_name, 'r') as file:
+        text.insert(END, file.read())
+
+def save_as():
+    file_name = filedialog.asksaveasfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
+    name = file_name.split('/')[-1]
+    root.title(f'{name} - Notepad')
+    with open(file_name, 'w') as file:
+        file.write(text.get(1.0, END))
 
 text_scroll = Scrollbar(frame)
 text_scroll.pack(fill='y', side='right')
@@ -23,11 +39,11 @@ file_menu = Menu(menu, tearoff=False)
 menu.add_cascade(label='File', menu=file_menu)
 file_menu.add_command(label='New', command=new)
 file_menu.add_separator()
-file_menu.add_command(label='Open')
+file_menu.add_command(label='Open', command=open_file)
 file_menu.add_command(label='Close')
 file_menu.add_separator()
 file_menu.add_command(label='Save')
-file_menu.add_command(label='Save As')
+file_menu.add_command(label='Save As', command=save_as)
 file_menu.add_separator()
 file_menu.add_command(label='Exit', command=root.destroy)
 
