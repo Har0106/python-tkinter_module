@@ -22,7 +22,7 @@ def disabel_normal():
 def add_song():
     global songs
     path = filedialog.askopenfilenames(filetypes=[('mp3 files', '*.mp3')])
-    songs += [[i, i.split('/')[-1]] for i in path]
+    songs += [[i, i.split('/')[-1].replace('.mp3', '')] for i in path]
     for i,a in songs:
         if a not in listboxes.get(0, END):
             listboxes.insert(END, a)
