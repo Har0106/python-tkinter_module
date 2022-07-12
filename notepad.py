@@ -17,9 +17,11 @@ def open_file():
     file_name = filedialog.askopenfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
     text.delete(1.0, END)
     name = file_name.split('/')[-1]
-    root.title(f'{name} - Notepad')
-    with open(file_name, 'r') as file:
-        text.insert(END, file.read())
+    if name != '':
+        root.title(f'{name} - Notepad')
+        with open(file_name, 'r') as file:
+            text.insert(END, file.read())
+            status_bar.configure(text='Saved    ')
 
 def save_as():
     global file_name
@@ -36,6 +38,7 @@ def save():
     else:
         with open(file_name, 'w') as file:
             file.write(text.get(1.0, END))
+    status_bar.configure(text='Saved    ')
 
 text_scroll = Scrollbar(frame)
 text_scroll.pack(fill='y', side='right')
