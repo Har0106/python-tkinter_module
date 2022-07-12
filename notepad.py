@@ -7,6 +7,8 @@ root.title('Untitled - Notepad')
 frame = Frame(root)
 frame.pack()
 
+cut_copy = None
+
 def new():
     text.delete(1.0, END)
     root.title('Untitled - Notepad')
@@ -40,6 +42,33 @@ def save():
             file.write(text.get(1.0, END))
     status_bar.configure(text='Saved    ')
 
+def cut(event):
+    global cut_copy
+    if event:
+        cut_copy = root.clipboard_get()
+    elif text.selection_get():
+        cut_copy = text.selection_get()
+        root.clipboard_clear()
+        root.clipboard_append(cut_copy)
+        text.delete('sel.first', 'sel.last')
+
+def copy(event):
+    global cut_copy
+    if event:
+        cut_copy = root.clipboard_get()
+    if text.selection_get():
+        cut_copy = text.selection_get()
+        root.clipboard_clear()
+        root.clipboard_append(cut_copy)
+
+def paste(event):
+    global cut_copy
+    if event:
+        cut_copy = root.clipboard_get()
+    elif cut_copy:
+        pos = text.index(INSERT)
+        text.insert(pos, cut_copy)
+
 text_scroll = Scrollbar(frame)
 text_scroll.pack(fill='y', side='right')
 text = Text(frame, font='Consolas 15', undo=True, yscrollcommand=text_scroll.set, height=25, width=82, selectbackground='black', selectforeground='white')
@@ -69,8 +98,11 @@ menu.add_cascade(label='Edit', menu=edit_menu)
 edit_menu.add_command(label='Undo')
 edit_menu.add_command(label='Redo')
 edit_menu.add_separator()
-edit_menu.add_command(label='Cut')
-edit_menu.add_command(label='Copy')
-edit_menu.add_command(label='Paste')
+edit_menu.add_command(label='Cut', command=lambda: cut(None))
+root.bind('<Control-x>', cut)
+edit_menu.add_command(label='Copy', command=lambda: copy(None))
+root.bind('<Control-c>', copy)
+edit_menu.add_command(label='Paste', command=lambda: paste(None))
+root.bind('<Control-v>', paste)
 
 root.mainloop()
