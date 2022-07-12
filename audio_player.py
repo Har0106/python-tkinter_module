@@ -3,10 +3,9 @@ from tkinter import filedialog
 from pygame import mixer
 
 root = Tk()
-root.title('MP3 Player')
+root.title('Audio Player')
 mixer.init()
 
-sound = None
 songs = []
 
 def disabel_normal():
@@ -21,8 +20,8 @@ def disabel_normal():
 
 def add_song():
     global songs
-    path = filedialog.askopenfilenames(filetypes=[('mp3 files', '*.mp3')])
-    songs += [[i, i.split('/')[-1].replace('.mp3', '')] for i in path]
+    path = filedialog.askopenfilenames(filetypes=[('mp3 files', '*.mp3'), ('wav files', '*.wav')])
+    songs += [[i, i.split('/')[-1]] for i in path]
     for i,a in songs:
         if a not in listboxes.get(0, END):
             listboxes.insert(END, a)
@@ -37,31 +36,32 @@ def delete_songs():
         if listboxes.get(ANCHOR) in i:
             songs.remove(i)
     listboxes.delete(ANCHOR)
+    mid.configure(text=u"\u25B6")
     if listboxes.curselection():
         listboxes.selection_clear(listboxes.curselection()[0])
     forward_button.configure(state='disable')
     backward_button.configure(state='disable')
-    sound.stop()
+    mixer.music.stop()
 
 def clear_songs():
     global songs
     listboxes.delete(0, END)
+    mid.configure(text=u"\u25B6")
     songs = []
     forward_button.configure(state='disable')
     backward_button.configure(state='disable')
-    sound.stop()
+    mixer.music.stop()
 
 def play_sound():
-    global sound
-    if sound:
-        sound.stop()
+    mixer.music.stop()
     for i,a in songs:
         if listboxes.get(0, END)[sel] == a:
-            sound = mixer.Sound(i)
-            sound.play()
+            mixer.music.load(i)
+            mixer.music.play()
 
 def get_sound(event):
     global sel
+    mid.configure(text=u'\u23F8')
     sel = listboxes.curselection()[0]
     disabel_normal()
     play_sound()
@@ -69,10 +69,10 @@ def get_sound(event):
 def play_pause():
     if mid.cget('text') == u"\u25B6":
         mid.configure(text=u'\u23F8')
-        mixer.pause()
+        mixer.music.unpause()
     else:
         mid.configure(text=u"\u25B6")
-        mixer.unpause()
+        mixer.music.pause()
 
 def forward_backward(v):
     global sel
