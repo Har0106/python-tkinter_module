@@ -12,8 +12,8 @@ def gen_set():
 
 def save():
     gen_set()
-    engine.save_to_file(entry.get(), entry_filename.get()+'.mp3')
-    Label(root, text='Saved!', font='Arial 15').grid(row=6, column=0, columnspan=2, pady=(10, 20))
+    engine.save_to_file(entry.get(), entry_filename.get())
+    Label(root, text=f'Saved {entry_filename.get()}!', font='Arial 15', width=16).grid(row=7, column=0, columnspan=2, pady=(10, 20))
     engine.runAndWait()
 
 def speak():
@@ -32,9 +32,11 @@ Radiobutton(root, text='Female', variable=gen, value=1, font='Arial 13').grid(ro
 
 Button(root, text='Speak', command=speak, font='Arial 13').grid(row=3, column=0, columnspan=2, pady=10)
 
-entry_filename = Entry(root, font='Arial 15')
-entry_filename.grid(row=4, column=0, columnspan=2, pady=10)
+Label(root, text='Enter the file name with\nthe extension', font='Arial 10').grid(row=4, column=0, columnspan=2, pady=10)
 
-Button(root, text='Save', command=save, font='Arial 13').grid(row=5, column=0, columnspan=2, pady=10)
+entry_filename = Entry(root, font='Arial 15')
+entry_filename.grid(row=5, column=0, columnspan=2, pady=10)
+
+Button(root, text='Save', command=save, font='Arial 13').grid(row=6, column=0, columnspan=2, pady=10)
 
 root.mainloop()
