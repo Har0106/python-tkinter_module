@@ -13,7 +13,7 @@ def gen_set():
 def save():
     gen_set()
     engine.save_to_file(entry.get(), entry_filename.get())
-    Label(root, text=f'Saved {entry_filename.get()}!', font='Arial 15', width=16).grid(row=7, column=0, columnspan=2, pady=(10, 20))
+    Label(root, text=f"Saved {entry_filename.get().split('/')[-1]}!", font='Arial 15', width=16).grid(row=7, column=0, columnspan=2, pady=(10, 20))
     engine.runAndWait()
 
 def speak():
