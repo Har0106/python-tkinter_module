@@ -1,3 +1,0 @@
-I am making a notepad with tkinter in python
-this project is helping me learn a lots of things mainly binding which i thought was so boring but now i just love it
-
