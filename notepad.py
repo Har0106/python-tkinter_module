@@ -69,13 +69,19 @@ def paste(event):
         pos = text.index(INSERT)
         text.insert(pos, cut_copy)
 
-text_scroll = Scrollbar(frame)
-text_scroll.pack(fill='y', side='right')
-text = Text(frame, font='Consolas 15', undo=True, yscrollcommand=text_scroll.set, height=25, width=82, selectbackground='black', selectforeground='white')
-text.pack()
-text_scroll.configure(command=text.yview)
+def select_all():
+    text.tag_add('sel', '1.0', 'end')
 
-status_bar = Label(frame, text='Unsaved    ', relief='groove', anchor='e')
+text_scroll_y = Scrollbar(frame)
+text_scroll_x = Scrollbar(frame, orient='horizontal')
+text_scroll_y.pack(fill='y', side='right')
+text_scroll_x.pack(fill='x', side='bottom')
+text = Text(frame, font='Consolas 15', undo=True, yscrollcommand=text_scroll_y.set, xscrollcommand=text_scroll_x.set, height=25, width=82, selectbackground='black', selectforeground='white', wrap='none')
+text.pack()
+text_scroll_y.configure(command=text.yview) 
+text_scroll_x.configure(command=text.xview)
+
+status_bar = Label(root, text='Unsaved    ', relief='groove', anchor='e')
 status_bar.pack(fill='x', side='bottom')
 
 menu = Menu(frame)
@@ -83,7 +89,7 @@ root.configure(menu=menu)
 
 file_menu = Menu(menu, tearoff=False)
 menu.add_cascade(label='File', menu=file_menu)
-file_menu.add_command(label='New', accelerator='Ctrl+N', command=lambda: new(None))
+file_menu.add_command(label='New        ', accelerator='Ctrl+N', command=lambda: new(None))
 root.bind('<Control-n>', new)
 file_menu.add_command(label='Open', accelerator='Ctrl+C', command=lambda: open_file(None))
 root.bind('<Control-o>', open_file)
@@ -97,8 +103,8 @@ file_menu.add_command(label='Exit', command=root.destroy)
 
 edit_menu = Menu(menu, tearoff=False)
 menu.add_cascade(label='Edit', menu=edit_menu)
-edit_menu.add_command(label='Undo')
-edit_menu.add_command(label='Redo')
+edit_menu.add_command(label='Undo       ', accelerator='Ctrl+Z')
+edit_menu.add_command(label='Redo', accelerator='Ctrl+Y')
 edit_menu.add_separator()
 edit_menu.add_command(label='Cut', accelerator='Ctrl+X', command=lambda: cut(None))
 root.bind('<Control-x>', cut)
@@ -106,5 +112,9 @@ edit_menu.add_command(label='Copy', accelerator='Ctrl+C', command=lambda: copy(N
 root.bind('<Control-c>', copy)
 edit_menu.add_command(label='Paste', accelerator='Ctrl+V', command=lambda: paste(None))
 root.bind('<Control-v>', paste)
+
+selection_menu = Menu(menu, tearoff=False)
+menu.add_cascade(label='Selection', menu=selection_menu)
+selection_menu.add_command(label='Select All       ', accelerator='Ctrl+A', command=select_all)
 
 root.mainloop()
