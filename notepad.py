@@ -9,12 +9,12 @@ frame.pack()
 
 cut_copy = None
 
-def new():
+def new(event):
     text.delete(1.0, END)
     root.title('Untitled - Notepad')
     status_bar.configure(text='Unsaved    ')
 
-def open_file():
+def open_file(event):
     global file_name
     file_name = filedialog.askopenfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
     text.delete(1.0, END)
@@ -25,7 +25,7 @@ def open_file():
             text.insert(END, file.read())
             status_bar.configure(text='Saved    ')
 
-def save_as():
+def save_as(event):
     global file_name
     file_name = filedialog.asksaveasfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
     name = file_name.split('/')[-1]
@@ -34,7 +34,7 @@ def save_as():
         file.write(text.get(1.0, END))
     status_bar.configure(text='Saved    ')
 
-def save():
+def save(event):
     if root.title() == 'Untitled - Notepad':
         save_as()
     else:
@@ -83,13 +83,15 @@ root.configure(menu=menu)
 
 file_menu = Menu(menu, tearoff=False)
 menu.add_cascade(label='File', menu=file_menu)
-file_menu.add_command(label='New', command=new)
+file_menu.add_command(label='New', accelerator='Ctrl+N', command=lambda: new(None))
+root.bind('<Control-n>', new)
+file_menu.add_command(label='Open', accelerator='Ctrl+C', command=lambda: open_file(None))
+root.bind('<Control-o>', open_file)
 file_menu.add_separator()
-file_menu.add_command(label='Open', command=open_file)
-file_menu.add_command(label='Close')
-file_menu.add_separator()
-file_menu.add_command(label='Save', command=save)
-file_menu.add_command(label='Save As', command=save_as)
+file_menu.add_command(label='Save', accelerator='Ctrl+S', command=lambda: save(None))
+root.bind('<Control-s>', save)
+file_menu.add_command(label='Save As', accelerator='Ctrl+Shift+S', command=lambda: save_as(None))
+root.bind('<Control-Shift-S>', save_as)
 file_menu.add_separator()
 file_menu.add_command(label='Exit', command=root.destroy)
 
@@ -98,11 +100,11 @@ menu.add_cascade(label='Edit', menu=edit_menu)
 edit_menu.add_command(label='Undo')
 edit_menu.add_command(label='Redo')
 edit_menu.add_separator()
-edit_menu.add_command(label='Cut', command=lambda: cut(None))
+edit_menu.add_command(label='Cut', accelerator='Ctrl+X', command=lambda: cut(None))
 root.bind('<Control-x>', cut)
-edit_menu.add_command(label='Copy', command=lambda: copy(None))
+edit_menu.add_command(label='Copy', accelerator='Ctrl+C', command=lambda: copy(None))
 root.bind('<Control-c>', copy)
-edit_menu.add_command(label='Paste', command=lambda: paste(None))
+edit_menu.add_command(label='Paste', accelerator='Ctrl+V', command=lambda: paste(None))
 root.bind('<Control-v>', paste)
 
 root.mainloop()
