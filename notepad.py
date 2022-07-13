@@ -74,9 +74,17 @@ def select_all():
 
 def dark_mode(event):
     text.configure(bg='#1f1d1d', fg='white', insertbackground='white', selectbackground='white', selectforeground='black')
+    file_menu.configure(bg='#1f1d1d', fg='white')
+    edit_menu.configure(bg='#1f1d1d', fg='white')
+    selection_menu.configure(bg='#1f1d1d', fg='white')
+    view_menu.configure(bg='#1f1d1d', fg='white')
 
 def light_mode(event):
     text.configure(bg='white', fg='black', insertbackground='black', selectbackground='black', selectforeground='white')
+    file_menu.configure(bg='white', fg='black')
+    edit_menu.configure(bg='white', fg='black')
+    selection_menu.configure(bg='white', fg='black')
+    view_menu.configure(bg='white', fg='black')
 
 def refresh_status():
     if file_name:
@@ -105,7 +113,7 @@ status_bar.pack(fill='x', side='bottom')
 menu = Menu(frame)
 root.configure(menu=menu)
 
-file_menu = Menu(menu, tearoff=False)
+file_menu = Menu(menu, tearoff=False, bg='white', fg='black')
 menu.add_cascade(label='File', menu=file_menu)
 file_menu.add_command(label='New', accelerator='Ctrl+N', command=lambda: new(None))
 root.bind('<Control-n>', new)
@@ -119,7 +127,7 @@ root.bind('<Control-Shift-S>', save_as)
 file_menu.add_separator()
 file_menu.add_command(label='Exit', command=root.destroy)
 
-edit_menu = Menu(menu, tearoff=False)
+edit_menu = Menu(menu, tearoff=False, bg='white', fg='black')
 menu.add_cascade(label='Edit', menu=edit_menu)
 edit_menu.add_command(label='Undo       ', accelerator='Ctrl+Z')
 edit_menu.add_command(label='Redo', accelerator='Ctrl+Y')
@@ -131,11 +139,11 @@ root.bind('<Control-c>', copy)
 edit_menu.add_command(label='Paste', accelerator='Ctrl+V', command=lambda: paste(None))
 root.bind('<Control-v>', paste)
 
-selection_menu = Menu(menu, tearoff=False)
+selection_menu = Menu(menu, tearoff=False, bg='white', fg='black')
 menu.add_cascade(label='Selection', menu=selection_menu)
 selection_menu.add_command(label='Select All       ', accelerator='Ctrl+A', command=select_all)
 
-view_menu = Menu(menu, tearoff=False)
+view_menu = Menu(menu, tearoff=False, bg='white', fg='black')
 menu.add_cascade(label='View', menu=view_menu)
 view_menu.add_command(label='Dark Mode       ', accelerator='Ctrl+Alt+D', command=lambda: dark_mode(None))
 root.bind('<Control-Alt-d>', dark_mode)
