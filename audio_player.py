@@ -32,6 +32,7 @@ def add_song():
             forward_button.configure(state='disabled')
 
 def delete_songs():
+    mid.configure(state='disable')
     for i in songs:
         if listboxes.get(ANCHOR) in i:
             songs.remove(i)
@@ -44,6 +45,7 @@ def delete_songs():
     mixer.music.stop()
 
 def clear_songs():
+    mid.configure(state='disable')
     global songs
     listboxes.delete(0, END)
     mid.configure(text=u"\u25B6")
@@ -53,6 +55,7 @@ def clear_songs():
     mixer.music.stop()
 
 def play_sound():
+    mid.configure(state='normal')
     mixer.music.stop()
     for i,a in songs:
         if listboxes.get(0, END)[sel] == a:
@@ -62,9 +65,10 @@ def play_sound():
 def get_sound(event):
     global sel
     mid.configure(text=u'\u23F8')
-    sel = listboxes.curselection()[0]
-    disabel_normal()
-    play_sound()
+    if listboxes.curselection():
+        sel = listboxes.curselection()[0]
+        disabel_normal()
+        play_sound()
 
 def play_pause():
     if mid.cget('text') == u"\u25B6":
@@ -91,7 +95,7 @@ listboxes.bind('<<ListboxSelect>>', get_sound)
 
 backward_button = Button(root, text=u'\u23EE', font='Arial 20', bd=0, command=lambda: forward_backward(0), state='disabled')
 backward_button.grid(row=1, column=0, pady=(0, 10), sticky='e')
-mid = Button(root, text=u"\u25B6", font='Arial 20', bd=0, command=play_pause)
+mid = Button(root, text=u"\u25B6", font='Arial 20', bd=0, command=play_pause, state='disabled')
 mid.grid(row=1, column=1, pady=(0, 10))
 forward_button = Button(root, text=u'\u23ED', font='Arial 20', bd=0, command=lambda: forward_backward(1), state='disabled')
 forward_button.grid(row=1, column=2, pady=(0, 10), sticky='w')
