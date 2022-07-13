@@ -15,24 +15,21 @@ def new(event):
 def open_file(event):
     global file_name
     file_name = filedialog.askopenfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
-    if file_name:
-        text.delete(1.0, END)
-        name = file_name.split('/')[-1]
-        if name != '':
-            root.title(f'{name} - Notepad')
-            with open(file_name, 'r') as file:
-                text.insert(END, file.read())
-                status_bar.configure(text='Saved    ')
+    text.delete(1.0, END)
+    name = file_name.split('/')[-1]
+    root.title(f'{name} - Notepad')
+    with open(file_name, 'r') as file:
+        text.insert(END, file.read())
+    status_bar.configure(text='Saved    ')
 
 def save_as(event):
     global file_name
     file_name = filedialog.asksaveasfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
-    if file_name:
-        name = file_name.split('/')[-1]
-        root.title(f'{name} - Notepad')
-        with open(file_name, 'w') as file:
-            file.write(text.get(1.0, END)[:-1])
-        status_bar.configure(text='Saved    ')
+    name = file_name.split('/')[-1]
+    root.title(f'{name} - Notepad')
+    with open(file_name, 'w') as file:
+        file.write(text.get(1.0, END)[:-1])
+    status_bar.configure(text='Saved    ')
 
 def save(event):
     if root.title() == 'Untitled - Notepad':
@@ -56,7 +53,7 @@ def copy(event):
     global cut_copy
     if event:
         cut_copy = root.clipboard_get()
-    if text.selection_get():
+    elif text.selection_get():
         cut_copy = text.selection_get()
         root.clipboard_clear()
         root.clipboard_append(cut_copy)
