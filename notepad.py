@@ -15,21 +15,23 @@ def new(event):
 def open_file(event):
     global file_name
     file_name = filedialog.askopenfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
-    text.delete(1.0, END)
-    name = file_name.split('/')[-1]
-    root.title(f'{name} - Notepad')
-    with open(file_name, 'r') as file:
-        text.insert(END, file.read())
-    status_bar.configure(text='Saved    ')
+    if file_name:
+        text.delete(1.0, END)
+        name = file_name.split('/')[-1]
+        root.title(f'{name} - Notepad')
+        with open(file_name, 'r') as file:
+            text.insert(END, file.read())
+        status_bar.configure(text='Saved    ')
 
 def save_as(event):
     global file_name
     file_name = filedialog.asksaveasfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
-    name = file_name.split('/')[-1]
-    root.title(f'{name} - Notepad')
-    with open(file_name, 'w') as file:
-        file.write(text.get(1.0, END)[:-1])
-    status_bar.configure(text='Saved    ')
+    if file_name:
+        name = file_name.split('/')[-1]
+        root.title(f'{name} - Notepad')
+        with open(file_name, 'w') as file:
+            file.write(text.get(1.0, END)[:-1])
+        status_bar.configure(text='Saved    ')
 
 def save(event):
     if root.title() == 'Untitled - Notepad':
@@ -78,10 +80,10 @@ def dark_mode(event):
 
 def light_mode(event):
     text.configure(bg='white', fg='black', insertbackground='black', selectbackground='black', selectforeground='white')
-    file_menu.configure(bg='white', fg='black')
-    edit_menu.configure(bg='white', fg='black')
-    selection_menu.configure(bg='white', fg='black')
-    view_menu.configure(bg='white', fg='black')
+    file_menu.configure(bg='SystemButtonFace', fg='black')
+    edit_menu.configure(bg='SystemButtonFace', fg='black')
+    selection_menu.configure(bg='SystemButtonFace', fg='black')
+    view_menu.configure(bg='SystemButtonFace', fg='black')
 
 def refresh_status():
     if file_name:
@@ -99,18 +101,18 @@ text_scroll_y = Scrollbar(frame)
 text_scroll_x = Scrollbar(frame, orient='horizontal')
 text_scroll_y.pack(fill='y', side='right')
 text_scroll_x.pack(fill='x', side='bottom')
-text = Text(frame, font='Consolas 15', undo=True, yscrollcommand=text_scroll_y.set, xscrollcommand=text_scroll_x.set, height=25, width=82, selectbackground='black', selectforeground='white', wrap='none')
+text = Text(frame, font='Consolas 15', undo=True, yscrollcommand=text_scroll_y.set, xscrollcommand=text_scroll_x.set, height=22, width=82, selectbackground='black', selectforeground='white', wrap='none')
 text.pack()
 text_scroll_y.configure(command=text.yview) 
 text_scroll_x.configure(command=text.xview)
 
-status_bar = Label(root, text='Unsaved    ', relief='groove', anchor='e', bg='#B2BEB5')
+status_bar = Label(root, text='Unsaved    ', relief='groove', anchor='e', bg='#808080')
 status_bar.pack(fill='x', side='bottom')
 
 menu = Menu(frame)
 root.configure(menu=menu)
 
-file_menu = Menu(menu, tearoff=False, bg='white', fg='black')
+file_menu = Menu(menu, tearoff=False, fg='black')
 menu.add_cascade(label='File', menu=file_menu)
 file_menu.add_command(label='New', accelerator='Ctrl+N', command=lambda: new(None))
 root.bind('<Control-n>', new)
@@ -124,7 +126,7 @@ root.bind('<Control-Shift-S>', save_as)
 file_menu.add_separator()
 file_menu.add_command(label='Exit', command=root.destroy)
 
-edit_menu = Menu(menu, tearoff=False, bg='white', fg='black')
+edit_menu = Menu(menu, tearoff=False, fg='black')
 menu.add_cascade(label='Edit', menu=edit_menu)
 edit_menu.add_command(label='Undo       ', accelerator='Ctrl+Z')
 edit_menu.add_command(label='Redo', accelerator='Ctrl+Y')
@@ -136,11 +138,11 @@ root.bind('<Control-c>', copy)
 edit_menu.add_command(label='Paste', accelerator='Ctrl+V', command=lambda: paste(None))
 root.bind('<Control-v>', paste)
 
-selection_menu = Menu(menu, tearoff=False, bg='white', fg='black')
+selection_menu = Menu(menu, tearoff=False, fg='black')
 menu.add_cascade(label='Selection', menu=selection_menu)
 selection_menu.add_command(label='Select All       ', accelerator='Ctrl+A', command=select_all)
 
-view_menu = Menu(menu, tearoff=False, bg='white', fg='black')
+view_menu = Menu(menu, tearoff=False, fg='black')
 menu.add_cascade(label='View', menu=view_menu)
 view_menu.add_command(label='Dark Mode       ', accelerator='Ctrl+Alt+D', command=lambda: dark_mode(None))
 root.bind('<Control-Alt-d>', dark_mode)
