@@ -4,10 +4,8 @@ from tkinter import filedialog
 root = Tk()
 root.title('Untitled - Notepad')
 
-frame = Frame(root)
-frame.pack()
-
 cut_copy = None
+file_name = None
 
 def new(event):
     text.delete(1.0, END)
@@ -17,29 +15,31 @@ def new(event):
 def open_file(event):
     global file_name
     file_name = filedialog.askopenfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
-    text.delete(1.0, END)
-    name = file_name.split('/')[-1]
-    if name != '':
-        root.title(f'{name} - Notepad')
-        with open(file_name, 'r') as file:
-            text.insert(END, file.read())
-            status_bar.configure(text='Saved    ')
+    if file_name:
+        text.delete(1.0, END)
+        name = file_name.split('/')[-1]
+        if name != '':
+            root.title(f'{name} - Notepad')
+            with open(file_name, 'r') as file:
+                text.insert(END, file.read())
+                status_bar.configure(text='Saved    ')
 
 def save_as(event):
     global file_name
     file_name = filedialog.asksaveasfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
-    name = file_name.split('/')[-1]
-    root.title(f'{name} - Notepad')
-    with open(file_name, 'w') as file:
-        file.write(text.get(1.0, END))
-    status_bar.configure(text='Saved    ')
+    if file_name:
+        name = file_name.split('/')[-1]
+        root.title(f'{name} - Notepad')
+        with open(file_name, 'w') as file:
+            file.write(text.get(1.0, END)[:-1])
+        status_bar.configure(text='Saved    ')
 
 def save(event):
     if root.title() == 'Untitled - Notepad':
-        save_as()
+        save_as(None)
     else:
         with open(file_name, 'w') as file:
-            file.write(text.get(1.0, END))
+            file.write(text.get(1.0, END)[:-1])
     status_bar.configure(text='Saved    ')
 
 def cut(event):
@@ -72,6 +72,24 @@ def paste(event):
 def select_all():
     text.tag_add('sel', '1.0', 'end')
 
+def dark_mode(event):
+    text.configure(bg='#1f1d1d', fg='white', insertbackground='white', selectbackground='white', selectforeground='black')
+
+def light_mode(event):
+    text.configure(bg='white', fg='black', insertbackground='black', selectbackground='black', selectforeground='white')
+
+def refresh_status():
+    if file_name:
+        with open(file_name, 'r') as file:
+            if file.read() == text.get(1.0, 'end-1c'):
+                status_bar.configure(text='Saved    ')
+            else:
+                status_bar.configure(text='Unsaved    ')
+    root.after(1000, refresh_status)
+
+frame = Frame(root)
+frame.pack()
+
 text_scroll_y = Scrollbar(frame)
 text_scroll_x = Scrollbar(frame, orient='horizontal')
 text_scroll_y.pack(fill='y', side='right')
@@ -81,7 +99,7 @@ text.pack()
 text_scroll_y.configure(command=text.yview) 
 text_scroll_x.configure(command=text.xview)
 
-status_bar = Label(root, text='Unsaved    ', relief='groove', anchor='e')
+status_bar = Label(root, text='Unsaved    ', relief='groove', anchor='e', bg='#B2BEB5')
 status_bar.pack(fill='x', side='bottom')
 
 menu = Menu(frame)
@@ -89,14 +107,14 @@ root.configure(menu=menu)
 
 file_menu = Menu(menu, tearoff=False)
 menu.add_cascade(label='File', menu=file_menu)
-file_menu.add_command(label='New        ', accelerator='Ctrl+N', command=lambda: new(None))
+file_menu.add_command(label='New', accelerator='Ctrl+N', command=lambda: new(None))
 root.bind('<Control-n>', new)
-file_menu.add_command(label='Open', accelerator='Ctrl+C', command=lambda: open_file(None))
+file_menu.add_command(label='Open', accelerator='Ctrl+O', command=lambda: open_file(None))
 root.bind('<Control-o>', open_file)
 file_menu.add_separator()
 file_menu.add_command(label='Save', accelerator='Ctrl+S', command=lambda: save(None))
 root.bind('<Control-s>', save)
-file_menu.add_command(label='Save As', accelerator='Ctrl+Shift+S', command=lambda: save_as(None))
+file_menu.add_command(label='Save As        ', accelerator='Ctrl+Shift+S', command=lambda: save_as(None))
 root.bind('<Control-Shift-S>', save_as)
 file_menu.add_separator()
 file_menu.add_command(label='Exit', command=root.destroy)
@@ -117,4 +135,12 @@ selection_menu = Menu(menu, tearoff=False)
 menu.add_cascade(label='Selection', menu=selection_menu)
 selection_menu.add_command(label='Select All       ', accelerator='Ctrl+A', command=select_all)
 
+view_menu = Menu(menu, tearoff=False)
+menu.add_cascade(label='View', menu=view_menu)
+view_menu.add_command(label='Dark Mode       ', accelerator='Ctrl+Alt+D', command=lambda: dark_mode(None))
+root.bind('<Control-Alt-d>', dark_mode)
+view_menu.add_command(label='Light Mode       ', accelerator='Ctrl+Alt+L', command=lambda: light_mode(None))
+root.bind('<Control-Alt-l>', light_mode)
+
+refresh_status()
 root.mainloop()
