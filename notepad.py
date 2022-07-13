@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox
 
 root = Tk()
 root.title('Untitled - Notepad')
@@ -77,6 +78,7 @@ def dark_mode(event):
     edit_menu.configure(bg='#1f1d1d', fg='white')
     selection_menu.configure(bg='#1f1d1d', fg='white')
     view_menu.configure(bg='#1f1d1d', fg='white')
+    help_menu.configure(bg='#1f1d1d', fg='white')
 
 def light_mode(event):
     text.configure(bg='white', fg='black', insertbackground='black', selectbackground='black', selectforeground='white')
@@ -84,6 +86,10 @@ def light_mode(event):
     edit_menu.configure(bg='SystemButtonFace', fg='black')
     selection_menu.configure(bg='SystemButtonFace', fg='black')
     view_menu.configure(bg='SystemButtonFace', fg='black')
+    help_menu.configure(bg='SystemButtonFace', fg='black')
+
+def about():
+    messagebox.showinfo('About', 'Notepad by Har0106')
 
 def refresh_status():
     if file_name:
@@ -148,6 +154,10 @@ view_menu.add_command(label='Dark Mode       ', accelerator='Ctrl+Alt+D', comman
 root.bind('<Control-Alt-d>', dark_mode)
 view_menu.add_command(label='Light Mode       ', accelerator='Ctrl+Alt+L', command=lambda: light_mode(None))
 root.bind('<Control-Alt-l>', light_mode)
+
+help_menu = Menu(menu, tearoff=False, fg='black')
+menu.add_cascade(label='Help', menu=help_menu)
+help_menu.add_command(label='About       ', command=about)
 
 refresh_status()
 root.mainloop()
