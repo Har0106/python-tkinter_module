@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import filedialog
 from pygame import mixer
+import audioread
+import time
 
 root = Tk()
 root.title('Audio Player')
@@ -20,15 +22,10 @@ def disabel_normal():
 def add_song():
     global songs
     path = filedialog.askopenfilenames(filetypes=[('mp3 files', '*.mp3'), ('wav files', '*.wav'), ('ogg files', '*.ogg')])
-    songs += [[i, i.split('/')[-1]] for i in path]
+    songs += [[i, i.split('/')[-1].split('.')[0].split(' - ')[1]] for i in path]
     for i,a in songs:
         if a not in listboxes.get(0, END):
             listboxes.insert(END, a)
-    if listboxes.curselection():
-        if len(listboxes.get(0, END)) > 1:
-            forward_button.configure(state='normal')
-        else:
-            forward_button.configure(state='disabled')
 
 def delete_songs():
     for i in songs:
@@ -41,7 +38,8 @@ def delete_songs():
     mid.configure(state='disable')
     forward_button.configure(state='disable')
     backward_button.configure(state='disable')
-    mixer.stop()
+    label.configure(text='')
+    mixer.music.stop()
 
 def clear_songs():
     global songs
@@ -51,15 +49,20 @@ def clear_songs():
     mid.configure(state='disable')
     forward_button.configure(state='disable')
     backward_button.configure(state='disable')
-    mixer.stop()
+    label.configure(text='')
+    mixer.music.stop()
 
 def play_sound():
     mid.configure(state='normal')
-    mixer.stop()
+    sound_button.configure(state='normal')
+    mixer.music.stop()
     for i,a in songs:
         if listboxes.get(0, END)[sel] == a:
-            sound = mixer.Sound(i)
-            sound.play()
+            sound = mixer.music.load(i)
+            label.configure(text='\n'.join(i.split('/')[-1].split('.')[0].split(' - ')))
+            mixer.music.play()
+            with audioread.audio_open(i) as f:
+                label3.configure(text=time.strftime('%M:%S', time.gmtime(f.duration)))
 
 def get_sound(event):
     global sel
@@ -72,10 +75,10 @@ def get_sound(event):
 def play_pause():
     if mid.cget('text') == u"\u25B6":
         mid.configure(text=u'\u23F8')
-        mixer.unpause()
+        mixer.music.unpause()
     else:
         mid.configure(text=u"\u25B6")
-        mixer.pause()
+        mixer.music.pause()
 
 def forward_backward(v):
     global sel
@@ -88,18 +91,45 @@ def forward_backward(v):
     disabel_normal()
     play_sound()
 
-listboxes = Listbox(root, width=40, font='Arial 15', activestyle='none')
-listboxes.grid(row=0, column=0, columnspan=3, padx=25, pady=(20, 5))
+def time_duration():
+    if mixer.music.get_busy():
+        label2.configure(text=time.strftime('%M:%S', time.gmtime(mixer.music.get_pos()/1000)))
+    root.after(1000, time_duration)
+
+frame = Frame(root, highlightthickness=1, highlightbackground='black')
+frame.pack(pady=20, padx=20)
+
+scroll_y = Scrollbar(frame)
+scroll_y.grid(sticky='ns', column=6, rowspan=4)
+
+listboxes = Listbox(frame, width=25, font='Arial 15', activestyle='none', height=18, bd=0, highlightthickness=1, highlightbackground='black', justify='center', yscrollcommand=scroll_y.set)
+listboxes.grid(row=0, column=5, rowspan=4)
 listboxes.bind('<<ListboxSelect>>', get_sound)
+scroll_y.configure(command=listboxes.yview)
 
-backward_button = Button(root, text=u'\u23EE', font='Arial 20', bd=0, command=lambda: forward_backward(0), state='disabled')
-backward_button.grid(row=1, column=0, pady=(0, 5), sticky='e')
-mid = Button(root, text=u"\u25B6", font='Arial 20', bd=0, command=play_pause, state='disabled')
-mid.grid(row=1, column=1, pady=(0, 5))
-forward_button = Button(root, text=u'\u23ED', font='Arial 20', bd=0, command=lambda: forward_backward(1), state='disabled')
-forward_button.grid(row=1, column=2, pady=(0, 5), sticky='w')
+sound_button = Button(frame, font='Arial 20', bd=0, state='disabled', text=u'🔈')
+sound_button.grid(row=0, column=0)
+info_button = Button(frame, font='Arial 28', bd=0, text=u'🛈')
+info_button.grid(row=0, column=4)
 
-menu = Menu(root)
+label = Label(frame, bg='white', text='', font='Arial 15', width=25, height=8, highlightthickness=1, highlightbackground='black', justify='center')
+label.grid(row=1, column=0, columnspan=5, padx=10)
+label3 = Label(frame, bg='white', text='00:00', font='Arial 8', highlightthickness=1, highlightbackground='black', justify='center')
+label3.grid(row=2, column=4, sticky='e', padx=10)
+label2 = Label(frame, bg='white', text='00:00', font='Arial 8', highlightthickness=1, highlightbackground='black', justify='center')
+label2.grid(row=2, column=0, sticky='w', padx=10)
+
+song_slider = Scale(frame, from_=0, to=100, orient='horizontal', length=175)
+song_slider.grid(row=2, column=1, sticky='n', columnspan=3)
+
+backward_button = Button(frame, text=u'\u23EE', font='Arial 20', bd=0, command=lambda: forward_backward(0), state='disabled')
+backward_button.grid(row=3, column=0, sticky='e', columnspan=2)
+mid = Button(frame, text=u"\u25B6", font='Arial 20', bd=0, command=play_pause, state='disabled')
+mid.grid(row=3, column=2)
+forward_button = Button(frame, text=u'\u23ED', font='Arial 20', bd=0, command=lambda: forward_backward(1), state='disabled')
+forward_button.grid(row=3, column=3, sticky='w', columnspan=2)
+
+menu = Menu(frame)
 root.config(menu=menu)
 
 player = Menu(menu)
@@ -112,4 +142,5 @@ edit_playlist.add_command(label='Add', command=add_song)
 edit_playlist.add_command(label='Remove', command=delete_songs)
 edit_playlist.add_command(label='Clear', command=clear_songs)
 
+time_duration()
 root.mainloop()
