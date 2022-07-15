@@ -11,7 +11,8 @@ mixer.init()
 songs = []
 volume = 100
 
-def disabel_normal():
+# Disabling or enabling forward button and backward button
+def disabel_fb():
     if listboxes.get(0, END)[-1] == listboxes.get(0, END)[sel]:
        forward_button.configure(state='disabled')
     else:
@@ -21,14 +22,36 @@ def disabel_normal():
     else:
        backward_button.configure(state='normal')
 
+# Modifying widgets if delete or clear function is used
+def disabel_dc():
+    mid.configure(state='disable')
+    forward_button.configure(state='disable')
+    backward_button.configure(state='disable')
+    sound_button.configure(state='disable', text='🔈')
+    volume_slider.configure(state='disabled', value=100)
+    song_slider.configure(state='disabled', value=0)
+    label4.configure(text='100%')
+    label2.configure(text='00:00')
+    label3.configure(text='00:00')
+    label.configure(text='')
+    mixer.music.stop()
+
+# Adding songs to the playlist
 def add_song():
     global songs
-    path = filedialog.askopenfilenames(filetypes=[('mp3 files', '*.mp3'), ('wav files', '*.wav'), ('ogg files', '*.ogg')])
+    path = filedialog.askopenfilenames(filetypes=[('mp3 files', '*.mp3'), ('ogg files', '*.ogg')])
     songs += [[i, i.split('/')[-1].split('.')[0].split(' - ')[1]] for i in path]
     for i,a in songs:
         if a not in listboxes.get(0, END):
             listboxes.insert(END, a)
+    # Disabling or enabling forward and backward button when adding new songs
+    if listboxes.curselection():
+        if len(listboxes.get(0, END)) > 1:
+            forward_button.configure(state='normal')
+        else:
+            forward_button.configure(state='disabled')
 
+# Deleting a selected song from the playlist
 def delete_songs():
     for i in songs:
         if listboxes.get(ANCHOR) in i:
@@ -37,32 +60,29 @@ def delete_songs():
     mid.configure(text=u"\u25B6")
     if listboxes.curselection():
         listboxes.selection_clear(listboxes.curselection()[0])
-    mid.configure(state='disable')
-    forward_button.configure(state='disable')
-    backward_button.configure(state='disable')
-    label.configure(text='')
-    mixer.music.stop()
+    disabel_dc()
 
+# Deleting all the songs from the playlist
 def clear_songs():
     global songs
     songs = []
     listboxes.delete(0, END)
     mid.configure(text=u"\u25B6")
-    mid.configure(state='disable')
-    forward_button.configure(state='disable')
-    backward_button.configure(state='disable')
-    label.configure(text='')
-    mixer.music.stop()
+    disabel_dc()
 
-def play_sound():
+# playing the song
+def get_sound():
+    global position
     mid.configure(state='normal')
     sound_button.configure(state='normal')
     song_slider.configure(state='normal')
     volume_slider.configure(state='normal')
     mixer.music.stop()
+    position = -1
     for i,a in songs:
         if listboxes.get(0, END)[sel] == a:
             mixer.music.load(i)
+            # Because I save songs like 'Artist - Song'
             label.configure(text='\n'.join(i.split('/')[-1].split('.')[0].split(' - ')))
             mixer.music.play()
             with audioread.audio_open(i) as f:
@@ -70,14 +90,16 @@ def play_sound():
                 label3.configure(text=time.strftime('%M:%S', time.gmtime(duration)))
                 song_slider.configure(to=duration)
 
-def get_sound(event):
+# Getting the song to be played
+def play_sound(event):
     global sel
     if listboxes.curselection():
         mid.configure(text=u'\u23F8')
         sel = listboxes.curselection()[0]
-        disabel_normal()
-        play_sound()
+        disabel_fb()
+        get_sound()
 
+# Pausing and unpausing the music
 def play_pause():
     if mid.cget('text') == u"\u25B6":
         mid.configure(text=u'\u23F8')
@@ -86,6 +108,7 @@ def play_pause():
         mid.configure(text=u"\u25B6")
         mixer.music.pause()
 
+# Play the next song or the previous song
 def forward_backward(v):
     global sel
     if v:
@@ -94,9 +117,10 @@ def forward_backward(v):
         sel = listboxes.curselection()[0] - 1
     listboxes.selection_clear(listboxes.curselection()[0])
     listboxes.selection_set(sel)
-    disabel_normal()
-    play_sound()
+    disabel_fb()
+    get_sound()
 
+# Muting and unmuting the song
 def mute():
     if mixer.music.get_volume() != 0:
         sound_button.configure(text='🔈x', anchor='e')
@@ -107,19 +131,21 @@ def mute():
         mixer.music.set_volume(int(volume))
         volume_slider.configure(state='normal')
 
-position = 0
-
+# Setting the position of the music
 def song_slider_command(x):
     global position
     position = float(song_slider.get())
     mixer.music.set_pos(position)
 
+# Setting volume of the song
 def volume_slider_command(x):
     global volume
     volume = x.split('.')[0]
     label4.configure(text=f"{volume}%")
     mixer.music.set_volume(int(volume))
 
+# Changing label and slider the position as the song plays
+# The song position would not be accurate
 def time_duration():
     global position
     if mixer.music.get_busy():
@@ -128,6 +154,7 @@ def time_duration():
         song_slider.configure(value=position)
     root.after(1000, time_duration)
 
+# Design of the audio player
 frame = Frame(root, highlightthickness=1, highlightbackground='black')
 frame.pack(pady=20, padx=20)
 
@@ -136,7 +163,7 @@ scroll_y.grid(sticky='ns', column=6, rowspan=4)
 
 listboxes = Listbox(frame, width=25, font='Arial 15', activestyle='none', height=18, bd=0, highlightthickness=1, highlightbackground='black', justify='center', yscrollcommand=scroll_y.set)
 listboxes.grid(row=0, column=5, rowspan=4)
-listboxes.bind('<<ListboxSelect>>', get_sound)
+listboxes.bind('<<ListboxSelect>>', play_sound)
 scroll_y.configure(command=listboxes.yview)
 
 sound_button = Button(frame, font='Arial 18', bd=0, state='disabled', text=u'🔈', command=mute)
