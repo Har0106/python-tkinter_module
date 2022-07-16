@@ -83,13 +83,14 @@ def clear_songs():
 # playing the song
 def play_sound():
     global position
-    position = -1
+    global duration
 
     # Enabling pause, sound buttons and song, volume sliders when a new song is being played
     mid.configure(state='normal')
     sound_button.configure(state='normal')
     song_slider.configure(state='normal')
     volume_slider.configure(state='normal')
+    position = 0
 
     # Stop if a music is already being played
     mixer.music.stop()
@@ -168,9 +169,12 @@ def volume_slider_command(x):
 def time_duration():
     global position
     if mixer.music.get_busy():
-        position += 1
-        label2.configure(text=time.strftime('%M:%S', time.gmtime(position)))
-        song_slider.configure(value=position)
+        if position != duration:
+            position += 1
+            label2.configure(text=time.strftime('%M:%S', time.gmtime(position)))
+            song_slider.configure(value=position)
+    else:
+        mid.configure(text=u"\u25B6", state='disabled')
     root.after(1000, time_duration)
 
 # Design of the audio player
