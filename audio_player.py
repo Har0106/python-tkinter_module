@@ -149,7 +149,7 @@ def mute():
         mixer.music.set_volume(0)
     else:
         sound_button.configure(text='🔈')
-        mixer.music.set_volume(int(volume))
+        mixer.music.set_volume(int(volume)/100)
         volume_slider.configure(state='normal')
 
 # Setting the position of the music
@@ -163,7 +163,7 @@ def volume_slider_command(x):
     global volume
     volume = x.split('.')[0]
     label4.configure(text=f"{volume}%")
-    mixer.music.set_volume(int(volume))
+    mixer.music.set_volume(int(volume)/100)
 
 # Changing label and slider the position as the song plays. The song position would not be accurate.
 def time_duration():
