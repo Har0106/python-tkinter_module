@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
+from tkinter import messagebox
 from pygame import mixer
 import audioread
 import time
@@ -231,6 +232,12 @@ forward_button.grid(row=3, column=3, sticky='w', columnspan=2)
 # Main menu of the app
 menu = Menu(frame)
 root.config(menu=menu)
+
+# Player menu to exit the app or get the info of app
+player_menu = Menu(menu, tearoff=0)
+menu.add_cascade(label='Player', menu=player_menu)
+player_menu.add_command(label='Exit', command=root.destroy)
+player_menu.add_command(label='About', command=lambda:messagebox.showinfo('About', 'Audio player by Har0106'))
 
 # Edit playlist menu to add new song to playlist, remove a song from playlist or remove all the songs in playlist
 edit_playlist = Menu(menu, tearoff=0)
