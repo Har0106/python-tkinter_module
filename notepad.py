@@ -2,182 +2,181 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 
-# Creating the gui window
-root = Tk()
-root.title('Untitled - Notepad')
+class Notepad():
+    def app(self):
+        # Creating the gui window
+        self.root = Tk()
+        self.root.title('Untitled - Notepad')
 
-cut_copy = None
-file_name = None
+        self.cut_copy = None
+        self.file_name = None
 
-# Opening a new file
-def new(event):
-    text.delete(1.0, END)
-    root.title('Untitled - Notepad')
-    status_bar.configure(text='Unsaved    ')
+        # Design of the notepad
 
-# Opening an existing file
-def open_file(event):
-    global file_name
-    file_name = filedialog.askopenfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
-    if file_name:
-        text.delete(1.0, END)
-        name = file_name.split('/')[-1]
-        root.title(f'{name} - Notepad')
-        with open(file_name, 'r') as file:
-            text.insert(END, file.read())
-        status_bar.configure(text='Saved    ')
+        # Main frame of the notepad
+        frame = Frame(self.root)
+        frame.pack()
 
-# Save the file with a new name
-def save_as(event):
-    global file_name
-    file_name = filedialog.asksaveasfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
-    if file_name:
-        name = file_name.split('/')[-1]
-        root.title(f'{name} - Notepad')
-        with open(file_name, 'w') as file:
-            file.write(text.get(1.0, END)[:-1])
-        status_bar.configure(text='Saved    ')
+        # Horizontal and vertical scrollbar for the text widget
+        text_scroll_y = Scrollbar(frame)
+        text_scroll_x = Scrollbar(frame, orient='horizontal')
+        text_scroll_y.pack(fill='y', side='right')
+        text_scroll_x.pack(fill='x', side='bottom')
+        self.text = Text(frame, font='Consolas 15', undo=True, yscrollcommand=text_scroll_y.set, xscrollcommand=text_scroll_x.set, height=22, width=82, selectbackground='black', selectforeground='white', wrap='none')
+        self.text.pack()
+        text_scroll_y.configure(command=self.text.yview) 
+        text_scroll_x.configure(command=self.text.xview)
 
-# Save the changes made to the opened file
-def save(event):
-    if root.title() == 'Untitled - Notepad':
-        save_as(None)
-    else:
-        with open(file_name, 'w') as file:
-            file.write(text.get(1.0, END)[:-1])
-    status_bar.configure(text='Saved    ')
+        # Status bar
+        self.status_bar = Label(self.root, text='Unsaved    ', relief='groove', anchor='e', bg='#808080')
+        self.status_bar.pack(fill='x', side='bottom')
 
-# Cut the selected text
-def cut(event):
-    global cut_copy
-    if event:
-        cut_copy = root.clipboard_get()
-    elif text.selection_get():
-        cut_copy = text.selection_get()
-        root.clipboard_clear()
-        root.clipboard_append(cut_copy)
-        text.delete('sel.first', 'sel.last')
+        # Main menu of the notepad
+        menu = Menu(frame)
+        self.root.configure(menu=menu)
 
-# Copy the selected text to the clipboard
-def copy(event):
-    global cut_copy
-    if event:
-        cut_copy = root.clipboard_get()
-    elif text.selection_get():
-        cut_copy = text.selection_get()
-        root.clipboard_clear()
-        root.clipboard_append(cut_copy)
+        # To create new file, open an existing file, save a file in another name and save the changes to a file 
+        self.file_menu = Menu(menu, tearoff=False, fg='black')
+        menu.add_cascade(label='File', menu=self.file_menu)
+        self.file_menu.add_command(label='New', accelerator='Ctrl+N', command=lambda: self.new(None))
+        self.root.bind('<Control-n>', self.new)
+        self.file_menu.add_command(label='Open', accelerator='Ctrl+O', command=lambda: self.open_file(None))
+        self.root.bind('<Control-o>', self.open_file)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label='Save', accelerator='Ctrl+S', command=lambda: self.save(None))
+        self.root.bind('<Control-s>', self.save)
+        self.file_menu.add_command(label='Save As        ', accelerator='Ctrl+Shift+S', command=lambda: self.save_as(None))
+        self.root.bind('<Control-Shift-S>', self.save_as)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label='Exit', command=self.root.destroy)
 
-# Paste the text in the clipboard whereever the curser is
-def paste(event):
-    global cut_copy
-    if event:
-        cut_copy = root.clipboard_get()
-    elif cut_copy:
-        pos = text.index(INSERT)
-        text.insert(pos, cut_copy)
+        # Cut, copy and paste text and redo or undo the changes made to a file
+        self.edit_menu = Menu(menu, tearoff=False, fg='black')
+        menu.add_cascade(label='Edit', menu=self.edit_menu)
+        self.edit_menu.add_command(label='Undo       ', accelerator='Ctrl+Z')
+        self.edit_menu.add_command(label='Redo', accelerator='Ctrl+Y')
+        self.edit_menu.add_separator()
+        self.edit_menu.add_command(label='Cut', accelerator='Ctrl+X', command=lambda: self.cut(None))
+        self.root.bind('<Control-x>', self.cut)
+        self.edit_menu.add_command(label='Copy', accelerator='Ctrl+C', command=lambda: self.copy(None))
+        self.root.bind('<Control-c>', self.copy)
+        self.edit_menu.add_command(label='Paste', accelerator='Ctrl+V', command=lambda: self.paste(None))
+        self.root.bind('<Control-v>', self.paste)
 
-# Select all the text in the notepad
-def select_all():
-    text.tag_add('sel', '1.0', 'end')
+        # Select all the text from the notepad
+        self.selection_menu = Menu(menu, tearoff=False, fg='black')
+        menu.add_cascade(label='Selection', menu=self.selection_menu)
+        self.selection_menu.add_command(label='Select All       ', accelerator='Ctrl+A', command=self.select_all)
 
-# Change white widgets to black
-def dark_mode(event):
-    text.configure(bg='#1f1d1d', fg='white', insertbackground='white', selectbackground='white', selectforeground='black')
-    file_menu.configure(bg='#1f1d1d', fg='white')
-    edit_menu.configure(bg='#1f1d1d', fg='white')
-    selection_menu.configure(bg='#1f1d1d', fg='white')
-    view_menu.configure(bg='#1f1d1d', fg='white')
-    help_menu.configure(bg='#1f1d1d', fg='white')
+        # Switch from light mode to dark mode and vice versa
+        self.view_menu = Menu(menu, tearoff=False, fg='black')
+        menu.add_cascade(label='View', menu=self.view_menu)
+        self.view_menu.add_command(label='Dark Mode       ', accelerator='Ctrl+Alt+D', command=lambda: self.dark_mode(None))
+        self.root.bind('<Control-Alt-d>', self.dark_mode)
+        self.view_menu.add_command(label='Light Mode       ', accelerator='Ctrl+Alt+L', command=lambda: self.light_mode(None))
+        self.root.bind('<Control-Alt-l>', self.light_mode)
 
-# Change black widgets to white
-def light_mode(event):
-    text.configure(bg='white', fg='black', insertbackground='black', selectbackground='black', selectforeground='white')
-    file_menu.configure(bg='SystemButtonFace', fg='black')
-    edit_menu.configure(bg='SystemButtonFace', fg='black')
-    selection_menu.configure(bg='SystemButtonFace', fg='black')
-    view_menu.configure(bg='SystemButtonFace', fg='black')
-    help_menu.configure(bg='SystemButtonFace', fg='black')
+        # About the notepad
+        self.help_menu = Menu(menu, tearoff=False, fg='black')
+        menu.add_cascade(label='Help', menu=self.help_menu)
+        self.help_menu.add_command(label='About       ', command=lambda:messagebox.showinfo('About', 'Notepad by Har0106'))
 
-# Updating the status bar as the user types something in
-def refresh_status():
-    if file_name:
-        with open(file_name, 'r') as file:
-            if file.read() == text.get(1.0, 'end-1c'):
-                status_bar.configure(text='Saved    ')
-            else:
-                status_bar.configure(text='Unsaved    ')
-    root.after(1000, refresh_status)
+        self.refresh_status()
+        self.root.mainloop()
 
-# Design of the notepad
+    # Opening a new file
+    def new(self, event):
+        self.text.delete(1.0, END)
+        self.root.title('Untitled - Notepad')
+        self.status_bar.configure(text='Unsaved    ')
 
-# Main frame of the notepad
-frame = Frame(root)
-frame.pack()
+    # Opening an existing file
+    def open_file(self, event):
+        self.file_name = filedialog.askopenfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
+        if self.file_name:
+            self.text.delete(1.0, END)
+            name = self.file_name.split('/')[-1]
+            self.root.title(f'{name} - Notepad')
+            with open(self.file_name, 'r') as file:
+                self.text.insert(END, file.read())
+            self.status_bar.configure(text='Saved    ')
 
-# Horizontal and vertical scrollbar for the text widget
-text_scroll_y = Scrollbar(frame)
-text_scroll_x = Scrollbar(frame, orient='horizontal')
-text_scroll_y.pack(fill='y', side='right')
-text_scroll_x.pack(fill='x', side='bottom')
-text = Text(frame, font='Consolas 15', undo=True, yscrollcommand=text_scroll_y.set, xscrollcommand=text_scroll_x.set, height=22, width=82, selectbackground='black', selectforeground='white', wrap='none')
-text.pack()
-text_scroll_y.configure(command=text.yview) 
-text_scroll_x.configure(command=text.xview)
+    # Save the file with a new name
+    def save_as(self, event):
+        self.file_name = filedialog.asksaveasfilename(filetypes=(('Python Files', '*.py'), ('Text Files', '*.txt'), ('All Files', '*.*')))
+        if self.file_name:
+            name = self.file_name.split('/')[-1]
+            self.root.title(f'{name} - Notepad')
+            with open(self.file_name, 'w') as file:
+                file.write(self.text.get(1.0, END)[:-1])
+            self.status_bar.configure(text='Saved    ')
 
-# Status bar
-status_bar = Label(root, text='Unsaved    ', relief='groove', anchor='e', bg='#808080')
-status_bar.pack(fill='x', side='bottom')
+    # Save the changes made to the opened file
+    def save(self, event):
+        if self.root.title() == 'Untitled - Notepad':
+            self.save_as(None)
+        else:
+            with open(self.file_name, 'w') as file:
+                file.write(self.text.get(1.0, END)[:-1])
+        self.status_bar.configure(text='Saved    ')
 
-# Main menu of the notepad
-menu = Menu(frame)
-root.configure(menu=menu)
+    # Cut the selected text
+    def cut(self, event):
+        if event:
+            self.cut_copy = self.root.clipboard_get()
+        elif self.text.selection_get():
+            self.cut_copy = self.text.selection_get()
+            self.root.clipboard_clear()
+            self.root.clipboard_append(self.cut_copy)
+            self.text.delete('sel.first', 'sel.last')
 
-# To create new file, open an existing file, save a file in another name and save the changes to a file 
-file_menu = Menu(menu, tearoff=False, fg='black')
-menu.add_cascade(label='File', menu=file_menu)
-file_menu.add_command(label='New', accelerator='Ctrl+N', command=lambda: new(None))
-root.bind('<Control-n>', new)
-file_menu.add_command(label='Open', accelerator='Ctrl+O', command=lambda: open_file(None))
-root.bind('<Control-o>', open_file)
-file_menu.add_separator()
-file_menu.add_command(label='Save', accelerator='Ctrl+S', command=lambda: save(None))
-root.bind('<Control-s>', save)
-file_menu.add_command(label='Save As        ', accelerator='Ctrl+Shift+S', command=lambda: save_as(None))
-root.bind('<Control-Shift-S>', save_as)
-file_menu.add_separator()
-file_menu.add_command(label='Exit', command=root.destroy)
+    # Copy the selected text to the clipboard
+    def copy(self, event):
+        if event:
+            self.cut_copy = self.root.clipboard_get()
+        elif self.text.selection_get():
+            cut_copy = self.text.selection_get()
+            self.root.clipboard_clear()
+            self.root.clipboard_append(self.cut_copy)
 
-# Cut, copy and paste text and redo or undo the changes made to a file
-edit_menu = Menu(menu, tearoff=False, fg='black')
-menu.add_cascade(label='Edit', menu=edit_menu)
-edit_menu.add_command(label='Undo       ', accelerator='Ctrl+Z')
-edit_menu.add_command(label='Redo', accelerator='Ctrl+Y')
-edit_menu.add_separator()
-edit_menu.add_command(label='Cut', accelerator='Ctrl+X', command=lambda: cut(None))
-root.bind('<Control-x>', cut)
-edit_menu.add_command(label='Copy', accelerator='Ctrl+C', command=lambda: copy(None))
-root.bind('<Control-c>', copy)
-edit_menu.add_command(label='Paste', accelerator='Ctrl+V', command=lambda: paste(None))
-root.bind('<Control-v>', paste)
+    # Paste the text in the clipboard whereever the curser is
+    def paste(self, event):
+        if event:
+            self.cut_copy = self.root.clipboard_get()
+        elif self.cut_copy:
+            pos = self.text.index(INSERT)
+            self.text.insert(pos, self.cut_copy)
 
-# Select all the text from the notepad
-selection_menu = Menu(menu, tearoff=False, fg='black')
-menu.add_cascade(label='Selection', menu=selection_menu)
-selection_menu.add_command(label='Select All       ', accelerator='Ctrl+A', command=select_all)
+    # Select all the text in the notepad
+    def select_all(self):
+        self.text.tag_add('sel', '1.0', 'end')
 
-# Switch from light mode to dark mode and vice versa
-view_menu = Menu(menu, tearoff=False, fg='black')
-menu.add_cascade(label='View', menu=view_menu)
-view_menu.add_command(label='Dark Mode       ', accelerator='Ctrl+Alt+D', command=lambda: dark_mode(None))
-root.bind('<Control-Alt-d>', dark_mode)
-view_menu.add_command(label='Light Mode       ', accelerator='Ctrl+Alt+L', command=lambda: light_mode(None))
-root.bind('<Control-Alt-l>', light_mode)
+    # Change white widgets to black
+    def dark_mode(self, event):
+        self.text.configure(bg='#1f1d1d', fg='white', insertbackground='white', selectbackground='white', selectforeground='black')
+        self.file_menu.configure(bg='#1f1d1d', fg='white')
+        self.edit_menu.configure(bg='#1f1d1d', fg='white')
+        self.selection_menu.configure(bg='#1f1d1d', fg='white')
+        self.view_menu.configure(bg='#1f1d1d', fg='white')
+        self.help_menu.configure(bg='#1f1d1d', fg='white')
 
-# About the notepad
-help_menu = Menu(menu, tearoff=False, fg='black')
-menu.add_cascade(label='Help', menu=help_menu)
-help_menu.add_command(label='About       ', command=lambda:messagebox.showinfo('About', 'Notepad by Har0106'))
+    # Change black widgets to white
+    def light_mode(self, event):
+        self.text.configure(bg='white', fg='black', insertbackground='black', selectbackground='black', selectforeground='white')
+        self.file_menu.configure(bg='SystemButtonFace', fg='black')
+        self.edit_menu.configure(bg='SystemButtonFace', fg='black')
+        self.selection_menu.configure(bg='SystemButtonFace', fg='black')
+        self.view_menu.configure(bg='SystemButtonFace', fg='black')
+        self.help_menu.configure(bg='SystemButtonFace', fg='black')
 
-refresh_status()
-root.mainloop()
+    # Updating the status bar as the user types something in
+    def refresh_status(self):
+        if self.file_name:
+            with open(self.file_name, 'r') as file:
+                if file.read() == self.text.get(1.0, 'end-1c'):
+                    self.status_bar.configure(text='Saved    ')
+                else:
+                    self.status_bar.configure(text='Unsaved    ')
+        self.root.after(1000, self.refresh_status)
+
+Notepad().app()
