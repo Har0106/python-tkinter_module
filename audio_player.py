@@ -169,12 +169,12 @@ def volume_slider_command(x):
 def time_duration():
     global position
     if mixer.music.get_busy():
-        if position != duration:
+        if position <= duration:
             position += 1
             label2.configure(text=time.strftime('%M:%S', time.gmtime(position)))
             song_slider.configure(value=position)
     else:
-        mid.configure(text=u"\u25B6", state='disabled')
+        mid.configure(text=u"\u25B6")
     root.after(1000, time_duration)
 
 # Design of the audio player
