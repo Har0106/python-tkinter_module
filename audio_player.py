@@ -15,9 +15,10 @@ class AudioPlayer():
         mixer.init()
         self.songs = []
         self.volume = 100
+        self.duration = 0
+        self.position = 0
 
         # Design of the audio player
-
         # Main frame of the app
         frame = Frame(self.root, highlightthickness=1, highlightbackground='black')
         frame.pack(pady=20, padx=20)
@@ -39,15 +40,12 @@ class AudioPlayer():
         # Label to show the song being played, with the artist name
         self.label = Label(frame, bg='white', text='', font='Arial 15', width=25, height=8, highlightthickness=1, highlightbackground='black', justify='center')
         self.label.grid(row=1, column=0, columnspan=5, padx=10)
-
         # Label to show the duration of the song
         self.label3 = Label(frame, bg='white', text='00:00', font='Arial 8', highlightthickness=1, highlightbackground='black', justify='center')
         self.label3.grid(row=2, column=4, sticky='e', padx=10)
-
         # Label to show the current song position
         self.label2 = Label(frame, bg='white', text='00:00', font='Arial 8', highlightthickness=1, highlightbackground='black', justify='center')
         self.label2.grid(row=2, column=0, sticky='w', padx=10)
-
         # Show the percentage of volume
         self.label4 = Label(frame, bg='white', text='100%', font='Arail 10', highlightthickness=1, highlightbackground='black', justify='center')
         self.label4.grid(row=0, column=4, sticky='w')
@@ -55,7 +53,6 @@ class AudioPlayer():
         # Song position slider
         self.song_slider = ttk.Scale(frame, from_=0, to=0, orient='horizontal', length=200, command=self.song_slider_command, state='disabled')
         self.song_slider.grid(row=2, column=1, columnspan=3)
-
         # Volume level slider
         self.volume_slider = ttk.Scale(frame, from_=0, to=100, orient='horizontal', length=175, command=self.volume_slider_command, value=100)
         self.volume_slider.grid(row=0, column=1, columnspan=3)
@@ -63,11 +60,9 @@ class AudioPlayer():
         # Button to play the song above the song, which is being played, in the playlist
         self.backward_button = Button(frame, text=u'\u23EE', font='Arial 20', bd=0, command=lambda: self.forward_backward(0), state='disabled')
         self.backward_button.grid(row=3, column=0, sticky='e', columnspan=2)
-
         # Pause and unpause the song
         self.mid = Button(frame, text=u"\u25B6", font='Arial 20', bd=0, command=self.play_pause, state='disabled')
         self.mid.grid(row=3, column=2)
-
         # Button to play the song below the song, which is being played, in the playlist
         self.forward_button = Button(frame, text=u'\u23ED', font='Arial 20', bd=0, command=lambda: self.forward_backward(1), state='disabled')
         self.forward_button.grid(row=3, column=3, sticky='w', columnspan=2)
@@ -223,7 +218,6 @@ class AudioPlayer():
     # Setting the position of the music
     def song_slider_command(self, x):
         self.position = float(self.song_slider.get())
-        mixer.music.set_pos(self.position)
 
     # Setting volume of the song and updating label
     def volume_slider_command(self, x):
@@ -236,10 +230,12 @@ class AudioPlayer():
         if mixer.music.get_busy():
             if self.position < self.duration:
                 self.position += 1
-                self.label2.configure(text=time.strftime('%M:%S', time.gmtime(self.position)))
-                self.song_slider.configure(value=self.position)
-        else:
-            self.mid.configure(text=u'\u25B6')
+                mixer.music.set_pos(round(self.position))
+                self.label2.configure(text=time.strftime('%M:%S', time.gmtime(round(self.position))))
+                self.song_slider.configure(value=round(self.position))
+        elif round(self.position) >= int(self.duration):
+            self.mid.configure(text=u'\u25B6', state='disabled')
+            self.song_slider.configure(state='disabled')
         self.root.after(1000, self.time_duration)
 
 AudioPlayer().app()
