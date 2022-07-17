@@ -3,101 +3,111 @@ from tkinter import messagebox
 from PIL import ImageTk, Image
 import random
 
-root = Tk()
-root.title('Math Flash Card App')
+class MathFlashcard():
+    def app(self):
+        # creating the main gui of the app
+        self.root = Tk()
+        self.root.title('Math Flash Card App')
 
-global home_image
-global home_numbers
-global home_label
-home_image = ImageTk.PhotoImage(Image.open('math_flashcard_app/numbers.jpg').resize((400, 400)))
-home_numbers = Label(root, image=home_image)
-home_label = Label(root, text='Learn Math With\nMath Flash Card App', font='Arial 15', justify='center')
-home_numbers.pack()
-home_label.pack(pady=20)
+        # creating images
+        self.home_image = ImageTk.PhotoImage(Image.open('math_flashcard_app/numbers.jpg').resize((400, 400)))
+        self.home_numbers = Label(self.root, image=self.home_image)
+        self.home_label = Label(self.root, text='Learn Math With\nMath Flash Card App', font='Arial 15', justify='center')
+        self.home_numbers.pack()
+        self.home_label.pack(pady=20)
 
-def hide_frames():
-    for widget in additon_frame.winfo_children():
-        widget.destroy()
-    for widget in subtraction_frame.winfo_children():
-        widget.destroy()
-    for widget in multiplication_frame.winfo_children():
-        widget.destroy()
+        # main menu of the app
+        menu = Menu(self.root)
+        self.root.config(menu=menu)
 
-    home_numbers.pack_forget()
-    home_label.pack_forget()
-    additon_frame.pack_forget()
-    subtraction_frame.pack_forget()
-    multiplication_frame.pack_forget()
+        # app menu to navigate to the home page or exit the app
+        app = Menu(menu)
+        menu.add_cascade(label='App', menu=app)
+        app.add_command(label='Home', command=self.home)
+        app.add_command(label='Exit', command=self.root.destroy)
 
-def home():
-    hide_frames()
-    home_numbers.pack()
-    home_label.pack(pady=20)
+        # math menu to select a quiz type
+        math = Menu(menu)
+        menu.add_cascade(label='Math', menu=math)
+        math.add_command(label='Addition', command=self.additon)
+        math.add_command(label='Subtraction', command=self.subtraction)
+        math.add_command(label='Multiplication', command=self.multiplication)
 
-def answers(symbol):
-    if symbol == 'x':
-        symbol = '*'
-    try:
-        ans = eval(str(num1) + symbol + str(num2))
-        if ans == int(entry.get()):
-            text = 'Correct!'
-        else:
-            text = f'Incorrect! The Answer is {ans}'
-        op_label.configure(text=text)
-    except:
-        messagebox.showerror('Error', 'Invalid Number Entered')
+        # separate frme for all quiz types
+        self.additon_frame = Frame(self.root)
+        self.subtraction_frame = Frame(self.root)
+        self.multiplication_frame = Frame(self.root)
 
-def operations(operation, frame, func):
-    global num1
-    global num2
-    num1 = random.randint(0, 9)
-    num2 = random.randint(0, 9)
-    Label(frame, text=num1, font='Arial 150').grid(row=0, column=0, padx=(50, 10))
-    Label(frame, text=operation, font='Arial 100').grid(row=0, column=1, padx=10, columnspan=2)
-    Label(frame, text=num2, font='Arial 150').grid(row=0, column=3, padx=(10, 50))
+        self.root.mainloop()
 
-    global entry
-    entry = Entry(frame, font='Arial 25', justify='center', width=10)
-    entry.grid(row=1, column=0, columnspan=4, pady=(0, 30))
+    # hiding frames when navigating from quiz type to another
+    def hide_frames(self):
+        for widget in self.additon_frame.winfo_children():
+            widget.destroy()
+        for widget in self.subtraction_frame.winfo_children():
+            widget.destroy()
+        for widget in self.multiplication_frame.winfo_children():
+            widget.destroy()
 
-    Button(frame, font='Arial 13', text='Submit', command=lambda: answers(operation)).grid(padx=10, pady=(0, 20), row=2, column=0, columnspan=2, sticky='e')
-    Button(frame, font='Arial 13', text='Next', command=func).grid(padx=10, pady=(0, 20), row=2, column=2, columnspan=2, sticky='w')
+        self.home_numbers.pack_forget()
+        self.home_label.pack_forget()
+        self.additon_frame.pack_forget()
+        self.subtraction_frame.pack_forget()
+        self.multiplication_frame.pack_forget()
 
-    global op_label
-    op_label = Label(frame, font='Arial 15', text='', width=30)
-    op_label.grid(pady=(10, 20), columnspan=4)
+    # to navigate to the home page
+    def home(self):
+        self.hide_frames()
+        self.home_numbers.pack()
+        self.home_label.pack(pady=20)
 
-def additon():
-    hide_frames()
-    additon_frame.pack(fill='both', expand=1)
-    operations('+', additon_frame, additon)
+    # to perform operations and evaluate the answer
+    def answers(self, symbol):
+        if symbol == 'x':
+            symbol = '*'
+        try:
+            ans = eval(str(self.num1) + symbol + str(self.num2))
+            if ans == int(self.entry.get()):
+                text = 'Correct!'
+            else:
+                text = f'Incorrect! The Answer is {ans}'
+            self.op_label.configure(text=text)
+        except:
+            messagebox.showerror('Error', 'Invalid Number Entered')
 
-def subtraction():
-    hide_frames()
-    subtraction_frame.pack(fill='both', expand=1)
-    operations('-', subtraction_frame, subtraction)
+    # main gui of different quiz types
+    def operations(self, operation, frame, func):
+        self.num1 = random.randint(0, 9)
+        self.num2 = random.randint(0, 9)
+        Label(frame, text=self.num1, font='Arial 150').grid(row=0, column=0, padx=(50, 10))
+        Label(frame, text=operation, font='Arial 100').grid(row=0, column=1, padx=10, columnspan=2)
+        Label(frame, text=self.num2, font='Arial 150').grid(row=0, column=3, padx=(10, 50))
 
-def multiplication():
-    hide_frames()
-    multiplication_frame.pack(fill='both', expand=1)
-    operations('x', multiplication_frame, multiplication)
+        self.entry = Entry(frame, font='Arial 25', justify='center', width=10)
+        self.entry.grid(row=1, column=0, columnspan=4, pady=(0, 30))
 
-menu = Menu(root)
-root.config(menu=menu)
+        Button(frame, font='Arial 13', text='Submit', command=lambda: self.answers(operation)).grid(padx=10, pady=(0, 20), row=2, column=0, columnspan=2, sticky='e')
+        Button(frame, font='Arial 13', text='Next', command=func).grid(padx=10, pady=(0, 20), row=2, column=2, columnspan=2, sticky='w')
 
-app = Menu(menu)
-menu.add_cascade(label='App', menu=app)
-app.add_command(label='Home', command=home)
-app.add_command(label='Exit', command=root.destroy)
+        self.op_label = Label(frame, font='Arial 15', text='', width=30)
+        self.op_label.grid(pady=(10, 20), columnspan=4)
 
-math = Menu(menu)
-menu.add_cascade(label='Math', menu=math)
-math.add_command(label='Addition', command=additon)
-math.add_command(label='Subtraction', command=subtraction)
-math.add_command(label='Multiplication', command=multiplication)
+    # addition quiz
+    def additon(self):
+        self.hide_frames()
+        self.additon_frame.pack(fill='both', expand=1)
+        self.operations('+', self.additon_frame, self.additon)
 
-additon_frame = Frame(root)
-subtraction_frame = Frame(root)
-multiplication_frame = Frame(root)
+    # subtraction quiz
+    def subtraction(self):
+        self.hide_frames()
+        self.subtraction_frame.pack(fill='both', expand=1)
+        self.operations('-', self.subtraction_frame, self.subtraction)
 
-root.mainloop()
+    # multiplication quiz
+    def multiplication(self):
+        self.hide_frames()
+        self.multiplication_frame.pack(fill='both', expand=1)
+        self.operations('x', self.multiplication_frame, self.multiplication)
+
+MathFlashcard().app()
