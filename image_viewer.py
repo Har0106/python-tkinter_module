@@ -1,4 +1,5 @@
 from tkinter import *
+from turtle import backward
 from PIL import ImageTk, Image
 
 class ImageViewer():
@@ -16,9 +17,11 @@ class ImageViewer():
         self.image = Label(image=image1)
         self.image.grid(columnspan=3, pady=8, padx=8, row=0, column=0)
 
-        Button(self.root, text='<', width=4, state='disabled').grid(row=1, column=0, pady=5)
+        self.backward_button = Button(self.root, text='<', width=4, state='disabled')
+        self.backward_button.grid(row=1, column=0, pady=5)
         Button(self.root, text='Close', width=5, command=self.root.quit).grid(row=1, column=1, pady=5)
-        Button(self.root, text='>', width=4, command=lambda:self.forward(0)).grid(row=1, column=2, pady=5)
+        self.forward_button = Button(self.root, text='>', width=4, command=lambda:self.forward(0))
+        self.forward_button.grid(row=1, column=2, pady=5)
 
         self.root.mainloop()
 
@@ -26,22 +29,22 @@ class ImageViewer():
         self.image.grid_forget()
         self.image = Label(image=self.images[number+1])
         self.image.grid(columnspan=3, pady=8, padx=8, row=0, column=0)
-        Button(self.root, text='<', width=4, command=lambda:self.backward(number-1), state='normal').grid(row=1, column=0, pady=5)
+        self.backward_button.configure(command=lambda:self.backward(number-1), state='normal')
 
         if number + 1 == 4:
-            Button(self.root, text='>', width=4, state='disabled').grid(row=1, column=2, pady=5)
+            self.forward_button.configure(state='disabled')
             return
-        Button(self.root, text='>', width=4, command=lambda:self.forward(number+1)).grid(row=1, column=2, pady=5)
+        self.forward_button.configure(command=lambda:self.forward(number+1))
 
     def backward(self, number):
         self.image.grid_forget()
         self.image = Label(image=self.images[number+1])
         self.image.grid(columnspan=3, pady=8, padx=8, row=0, column=0)
-        Button(self.root, text='>', width=4, command=lambda:self.forward(number+1)).grid(row=1, column=2, pady=5)
+        self.forward_button.configure(command=lambda:self.forward(number+1))
 
         if number+1 == 0:
-            Button(self.root, text='<', width=4, state='disabled').grid(row=1, column=0, pady=5)
+            self.backward_button.configure(state='disabled')
             return
-        Button(self.root, text='<', width=4, command=lambda:self.backward(number-1)).grid(row=1, column=0, pady=5)
+        self.backward_button.configure(command=lambda:self.backward(number-1))
 
 ImageViewer().app()
