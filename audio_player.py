@@ -33,7 +33,7 @@ class AudioPlayer():
         scroll_y.configure(command=self.listboxes.yview)
 
         # Volume mute or unmute button
-        self.sound_button = Button(frame, font='Arial 18', bd=0, state='disabled', text=u'🔈', command=self.mute)
+        self.sound_button = Button(frame, font='Arial 18', bd=0, text=u'🔈', command=self.mute)
         self.sound_button.grid(row=0, column=0, sticky='e')
 
         # Label to show the song being played, with the artist name
@@ -57,7 +57,7 @@ class AudioPlayer():
         self.song_slider.grid(row=2, column=1, columnspan=3)
 
         # Volume level slider
-        self.volume_slider = ttk.Scale(frame, from_=0, to=100, orient='horizontal', length=175, command=self.volume_slider_command, value=100, state='disabled')
+        self.volume_slider = ttk.Scale(frame, from_=0, to=100, orient='horizontal', length=175, command=self.volume_slider_command, value=100)
         self.volume_slider.grid(row=0, column=1, columnspan=3)
 
         # Button to play the song above the song, which is being played, in the playlist
@@ -112,8 +112,6 @@ class AudioPlayer():
         self.mid.configure(state='disable')
         self.forward_button.configure(state='disable')
         self.backward_button.configure(state='disable')
-        self.sound_button.configure(state='disable', text='🔈')
-        self.volume_slider.configure(state='disabled', value=100)
         self.song_slider.configure(state='disabled', value=0)
         self.label4.configure(text='100%')
         self.label2.configure(text='00:00')
@@ -161,9 +159,7 @@ class AudioPlayer():
         # Enabling pause, sound buttons and song, volume sliders when a new song is being played
         self.mid.configure(text=u"\u23F8")
         self.mid.configure(state='normal')
-        self.sound_button.configure(state='normal')
         self.song_slider.configure(state='normal')
-        self.volume_slider.configure(state='normal')
         self.position = 0
 
         # Stop if a music is already being played
@@ -243,8 +239,7 @@ class AudioPlayer():
                 self.label2.configure(text=time.strftime('%M:%S', time.gmtime(self.position)))
                 self.song_slider.configure(value=self.position)
         else:
-            self.mid.configure(text=u"\u25B6", state='disabled')
-            self.song_slider.configure(state='disabled')
+            self.mid.configure(text=u'\u25B6')
         self.root.after(1000, self.time_duration)
 
 AudioPlayer().app()
