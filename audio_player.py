@@ -238,12 +238,13 @@ class AudioPlayer():
     # Changing label and slider the position as the song plays. The song position would not be accurate.
     def time_duration(self):
         if mixer.music.get_busy():
-            if self.position <= self.duration:
+            if self.position < self.duration:
                 self.position += 1
                 self.label2.configure(text=time.strftime('%M:%S', time.gmtime(self.position)))
                 self.song_slider.configure(value=self.position)
         else:
-            self.mid.configure(text=u"\u25B6")
+            self.mid.configure(text=u"\u25B6", state='disabled')
+            self.song_slider.configure(state='disabled')
         self.root.after(1000, self.time_duration)
 
 AudioPlayer().app()
