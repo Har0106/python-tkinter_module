@@ -7,9 +7,6 @@ class WordJumble():
         self.root = Tk()
         self.root.title('Word Jumble Game')
 
-        # to show the first word of the game
-        self.word()
-
         # design of the app
         self.entry = Entry(self.root, font='Arial 20', justify='center')
         self.entry.grid(row=1, column=0, columnspan=3, pady=10)
@@ -26,6 +23,9 @@ class WordJumble():
         self.submit_label = Label(self.root, font='Arial 15', text='', width=40)
         self.submit_label.grid(row=4, column=0, columnspan=3, pady=(0, 20))
 
+        # to show the first word of the game
+        self.word()
+        
         self.root.mainloop()
 
     def word(self):
@@ -33,12 +33,9 @@ class WordJumble():
         self.text = ''
 
         # deleting what is already there on the screen letting the exception pass for the first word of game
-        try:
-            self.entry.delete(0, END)
-            self.label.configure(text='')
-            self.submit_label.configure(text='')
-        except:
-            pass
+        self.entry.delete(0, END)
+        self.label.configure(text='')
+        self.submit_label.configure(text='')
 
         # choosing a word from the list and shuffling it
         words = ['algorithm', 'argument', 'program', 'conditional', 'declaration', 'framework', 'iteration', 'autonomous', 'statements', 'compiling', 'latency', 'asynchronous', 'backpropagation', 'centroid', 'clustering', 'denoising', 'generalization', 'lambda', 'authentication', 'decryption', 'encryption', 'scareware', 'bootstrap', 'debugging', 'deployment', 'microsoft', 'oracle', 'adobe', 'console']
