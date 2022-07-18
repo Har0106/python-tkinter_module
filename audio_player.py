@@ -234,8 +234,11 @@ class AudioPlayer():
                 self.label2.configure(text=time.strftime('%M:%S', time.gmtime(round(self.position))))
                 self.song_slider.configure(value=round(self.position))
         elif round(self.position) >= int(self.duration):
-            self.mid.configure(text=u'\u25B6', state='disabled')
-            self.song_slider.configure(state='disabled')
+            if self.forward_button['state'] == 'normal':
+                self.forward_backward(1)
+            else:
+                self.mid.configure(text=u'\u25B6', state='disabled')
+                self.song_slider.configure(state='disabled')
         self.root.after(1000, self.time_duration)
 
 AudioPlayer().app()
