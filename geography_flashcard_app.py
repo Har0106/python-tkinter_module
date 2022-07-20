@@ -20,13 +20,13 @@ class GeographyFlashcard():
         self.root.config(menu=menu)
 
         # App menu to come back to the home page or exit the app
-        app = Menu(menu)
+        app = Menu(menu, tearoff=False)
         menu.add_cascade(label='App', menu=app)
         app.add_command(label='Home', command=self.home)
         app.add_command(label='Exit', command=self.root.destroy)
 
         # Geography menu to select quiz type
-        geography = Menu(menu)
+        geography = Menu(menu, tearoff=False)
         menu.add_cascade(label='Geography', menu=geography)
         geography.add_command(label='States', command=self.states)
         geography.add_command(label='State Capitals', command=self.state_capitals)

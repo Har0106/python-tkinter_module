@@ -72,13 +72,13 @@ class AudioPlayer():
         self.root.config(menu=menu)
 
         # Player menu to exit the app or get the info of app
-        player_menu = Menu(menu, tearoff=0)
+        player_menu = Menu(menu, tearoff=False)
         menu.add_cascade(label='Player', menu=player_menu)
         player_menu.add_command(label='Exit', command=self.root.destroy)
         player_menu.add_command(label='About', command=lambda:messagebox.showinfo('About', 'Audio player by Har0106'))
 
         # Edit playlist menu to add new song to playlist, remove a song from playlist or remove all the songs in playlist
-        edit_playlist = Menu(menu, tearoff=0)
+        edit_playlist = Menu(menu, tearoff=False)
         menu.add_cascade(label='Edit Playlist', menu=edit_playlist)
         edit_playlist.add_command(label='Add', command=self.add_song)
         edit_playlist.add_command(label='Remove', command=self.delete_songs)

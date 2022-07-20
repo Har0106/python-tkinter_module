@@ -21,13 +21,13 @@ class MathFlashcard():
         self.root.config(menu=menu)
 
         # app menu to navigate to the home page or exit the app
-        app = Menu(menu)
+        app = Menu(menu, tearoff=False)
         menu.add_cascade(label='App', menu=app)
         app.add_command(label='Home', command=self.home)
         app.add_command(label='Exit', command=self.root.destroy)
 
         # math menu to select a quiz type
-        math = Menu(menu)
+        math = Menu(menu, tearoff=False)
         menu.add_cascade(label='Math', menu=math)
         math.add_command(label='Addition', command=self.additon)
         math.add_command(label='Subtraction', command=self.subtraction)
