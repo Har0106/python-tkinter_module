@@ -8,14 +8,60 @@ class MemoryGame():
         self.root = Tk()
         self.root.title('Memory Game')
 
+        # fruits and few vegetables to be shown on the screen when a button is clicked
+        self.tiles = ['🍏','🍏','🍊','🍊','🍎','🍎','🍐','🍐','🍋','🍋','🍇','🍇','🍓','🍓','🍈','🍈','🍒','🍒','🥭','🥭', '🍌', '🍌', '🍉', '🍉', '🍍', '🍍', '🥝', '🥝', '🥑', '🥑', '🍑', '🍑', '🌽', '🌽', '🍅', '🍅']
+        self.tile_count = 16
+        self.show_tiles = self.tiles[0:self.tile_count]
+
         # to create the initial memory game board
         self.reset()
 
         self.root.mainloop()
 
+    # to reset everything if player clicked on yes
+    def reset(self):
+        # shuffling tiles to grid them on random places
+        random.shuffle(self.show_tiles)
+
+        # to show buttons on the gui window
+        self.ls = [i for i in range(self.tile_count)]
+        coordinates = [[i, j] for i in range(int(self.tile_count**(1/2))) for j in range(int(self.tile_count**(1/2)))]
+
+        # to store what the player has clicked and how many times he/she/they clicked
+        self.clicked = list()
+        self.count = 0
+
+        menu = Menu(self.root)
+        self.root.configure(menu=menu)
+
+        game = Menu(menu, tearoff=False)
+        menu.add_cascade(label='Game', menu=game)
+        game.add_command(label='Reset', command=self.reset)
+        game.add_command(label='Exit', command=self.root.destroy)
+
+        options = Menu(menu, tearoff=False)
+        menu.add_cascade(label='Options', menu=options)
+        options.add_command(label='16 tiles', command=lambda:self.options_command(16))
+        options.add_command(label='36 tiles', command=lambda:self.options_command(36))
+
+        # griding the buttons on the gui window
+        for i in range(self.tile_count):
+            def func(x=i):
+                return self.show(x)
+            self.ls[i] = Button(self.root, text='', font='Arial 35', width=3, command=func, bg='#ECFFDC')
+            self.ls[i].grid(row=coordinates[i][0], column=coordinates[i][1])
+
+    def options_command(self, num):
+        if self.tile_count != num:
+            for i in self.root.winfo_children():
+                i.destroy()
+            self.tile_count = num
+            self.show_tiles = self.tiles[0:self.tile_count]
+            self.reset()
+
     def show(self, b):
         # things to be done write after a tile is clicked
-        self.ls[b].configure(text=self.tiles[b], state='disabled', disabledforeground='black')
+        self.ls[b].configure(text=self.show_tiles[b], state='disabled', disabledforeground='black')
         self.clicked.append(self.ls[b])
         self.count += 1
 
@@ -29,34 +75,10 @@ class MemoryGame():
                 self.clicked[-2].configure(text='', state='normal')
                 self.ls[b].configure(text='', state='normal')
 
-        # to reset or quit the game after all the tiles are matched
+        # to reset the game after all the tiles are matched if player clicked on yes
         state = set([i['state'] for i in self.ls])
         if len(state) == 1 and list(state)[0] == 'disabled':
             if messagebox.askyesno('Gmae Over', 'Congratulations!\nDo you want to play again?'):
                 self.reset()
-            else:
-                self.root.destroy()
-                quit()
-
-    # to reset everything if player clicked on yes
-    def reset(self):
-        # fruits and few vegetables to be shown on the screen when a button is clicked
-        self.tiles = ['🍏','🍏','🍊','🍊','🍎','🍎','🍐','🍐','🍋','🍋','🍇','🍇','🍓','🍓','🍈','🍈','🍒','🍒','🥭','🥭', '🍌', '🍌', '🍉', '🍉', '🍍', '🍍', '🥝', '🥝', '🥑', '🥑', '🍑', '🍑', '🌽', '🌽', '🍅', '🍅']
-        random.shuffle(self.tiles)
-
-        # to show buttons on the gui window
-        self.ls = [i for i in range(36)]
-        coordinates = [[i, j] for i in range(6) for j in range(6)]
-
-        # to store what the player has clicked and how many times he/she/they clicked
-        self.clicked = list()
-        self.count = 0
-
-        # griding the buttons on the gui window
-        for i in range(36):
-            def func(x=i):
-                return self.show(x)
-            self.ls[i] = Button(self.root, text='', font='Arial 35', width=3, command=func, bg='#ECFFDC')
-            self.ls[i].grid(row=coordinates[i][0], column=coordinates[i][1])
 
 MemoryGame().game()
