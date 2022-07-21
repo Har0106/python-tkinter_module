@@ -10,7 +10,10 @@ class MemoryGame():
 
         # fruits and few vegetables to be shown on the screen when a button is clicked
         self.tiles = ['🍏','🍏','🍊','🍊','🍎','🍎','🍐','🍐','🍋','🍋','🍇','🍇','🍓','🍓','🍈','🍈','🍒','🍒','🥭','🥭', '🍌', '🍌', '🍉', '🍉', '🍍', '🍍', '🥝', '🥝', '🥑', '🥑', '🍑', '🍑', '🌽', '🌽', '🍅', '🍅']
+        
+        # initial number of tiles
         self.tile_count = 16
+        # slicing tiles upto tile count
         self.show_tiles = self.tiles[0:self.tile_count]
 
         # to create the initial memory game board
@@ -31,14 +34,17 @@ class MemoryGame():
         self.clicked = list()
         self.count = 0
 
+        # main menu of the project
         menu = Menu(self.root)
         self.root.configure(menu=menu)
 
+        # game menu to reset or exit the game
         game = Menu(menu, tearoff=False)
         menu.add_cascade(label='Game', menu=game)
         game.add_command(label='Reset', command=self.reset)
         game.add_command(label='Exit', command=self.root.destroy)
 
+        # options menu to decide the number of tiles
         options = Menu(menu, tearoff=False)
         menu.add_cascade(label='Options', menu=options)
         options.add_command(label='16 tiles', command=lambda:self.options_command(16))
@@ -52,6 +58,7 @@ class MemoryGame():
             self.ls[i].grid(row=coordinates[i][0], column=coordinates[i][1])
 
     def options_command(self, num):
+        # setting the number of tiles to player's option
         if self.tile_count != num:
             for i in self.root.winfo_children():
                 i.destroy()
