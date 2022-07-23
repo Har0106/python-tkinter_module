@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import messagebox
-from tkinter import font
 
 class ToDoList():
     def app(self):
@@ -18,7 +17,7 @@ class ToDoList():
 
         button_remove = Button(self.root, text='Remove', font=('Comic Sans MS', 13),bd=0, command=self.remove)
         button_remove.grid(row=2, column=0, sticky='nesw', pady=10, padx=(10, 5))
-        button_remove = Button(self.root, text='Clear', font=('Comic Sans MS', 13), bd=0)
+        button_remove = Button(self.root, text='Clear', font=('Comic Sans MS', 13), bd=0, command=self.clear)
         button_remove.grid(row=2, column=1, sticky='nesw', pady=10, padx=(0, 5))
         button_remove = Button(self.root, text='Save', font=('Comic Sans MS', 13), bd=0)
         button_remove.grid(row=2, column=2, sticky='nesw', pady=10, padx=(0, 5))
@@ -50,5 +49,8 @@ class ToDoList():
         if self.listbox.curselection():
             self.listbox.itemconfigure(self.listbox.curselection(), fg='#B2BEB5')
             self.listbox.selection_clear(self.listbox.curselection())
+
+    def clear(self):
+        self.listbox.delete(0, END)
 
 ToDoList().app()
