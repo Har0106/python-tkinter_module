@@ -28,7 +28,8 @@ class Notepad():
         text_scroll_x.configure(command=self.text.xview)
 
         # Status bar
-        self.status_bar = Label(self.root, text='Unsaved    ', relief='groove', anchor='e', bg='#808080')
+        self.status = 'Unsaved'
+        self.status_bar = Label(self.root, text='', relief='groove', anchor='e', bg='#808080')
         self.status_bar.pack(fill='x', side='bottom')
 
         # Main menu of the notepad
@@ -88,7 +89,6 @@ class Notepad():
     def new(self, event):
         self.text.delete(1.0, END)
         self.root.title('Untitled - Notepad')
-        self.status_bar.configure(text='Unsaved    ')
 
     # Opening an existing file
     def open_file(self, event):
@@ -99,7 +99,6 @@ class Notepad():
             self.root.title(f'{name} - Notepad')
             with open(self.file_name, 'r') as file:
                 self.text.insert(END, file.read())
-            self.status_bar.configure(text='Saved    ')
 
     # Save the file with a new name
     def save_as(self, event):
@@ -109,7 +108,6 @@ class Notepad():
             self.root.title(f'{name} - Notepad')
             with open(self.file_name, 'w') as file:
                 file.write(self.text.get(1.0, END)[:-1])
-            self.status_bar.configure(text='Saved    ')
 
     # Save the changes made to the opened file
     def save(self, event):
@@ -118,7 +116,6 @@ class Notepad():
         else:
             with open(self.file_name, 'w') as file:
                 file.write(self.text.get(1.0, END)[:-1])
-        self.status_bar.configure(text='Saved    ')
 
     # Cut the selected text
     def cut(self, event):
@@ -171,12 +168,14 @@ class Notepad():
 
     # Updating the status bar as the user types something in
     def refresh_status(self):
+        row, column = self.text.index(INSERT).split('.')
         if self.file_name:
             with open(self.file_name, 'r') as file:
                 if file.read() == self.text.get(1.0, 'end-1c'):
-                    self.status_bar.configure(text='Saved    ')
+                    self.status = 'Saved'
                 else:
-                    self.status_bar.configure(text='Unsaved    ')
+                    self.status = 'Unsaved'
+        self.status_bar.configure(text=f'Ln {row}, Col {column}     {self.status}       ')
         self.root.after(1000, self.refresh_status)
 
 Notepad().app()
