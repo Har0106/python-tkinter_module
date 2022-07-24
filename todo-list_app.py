@@ -9,9 +9,14 @@ class ToDoList():
         self.root.title('Untitled - ToDo List')
         self.root.configure(bg='#E5E4E2')
 
+        # scroll bar for the listbox
+        scrollbar = Scrollbar(self.root)
+        scrollbar.grid(row=0, column=5, sticky='ns')
+
         # listbox to save the tasks
-        self.listbox = Listbox(self.root, width=30, height=10, font=('Comic Sans MS', 16), activestyle='none', selectbackground='black', selectforeground='white')
+        self.listbox = Listbox(self.root, width=28, height=10, font=('Comic Sans MS', 16), activestyle='none', selectbackground='black', selectforeground='white', yscrollcommand=scrollbar.set)
         self.listbox.grid(row=0, column=0, columnspan=5, sticky='nesw')
+        scrollbar.configure(command=self.listbox.yview)
 
         # to add an item to the listbox
         self.entry = Entry(self.root, font=('Comic Sans MS', 16), width=24)
@@ -30,7 +35,7 @@ class ToDoList():
         button_save.grid(row=2, column=2, sticky='nesw', pady=10, padx=(0, 5))
         button_saveas = Button(self.root, text='Save As', font=('Comic Sans MS', 13), bd=0, command=self.save_as)
         button_saveas.grid(row=2, column=3, sticky='nesw', pady=10, padx=(0, 5))
-        button_open = Button(self.root, text='Open', font=('Comic Sans MS', 13), bd=0)
+        button_open = Button(self.root, text='Open', font=('Comic Sans MS', 13), bd=0, command=self.open_file)
         button_open.grid(row=2, column=4, sticky='nesw', pady=10, padx=(0, 10))
 
         # bindings
@@ -44,10 +49,10 @@ class ToDoList():
         if self.entry.get():
             if self.listbox.curselection():
                 # add the item after the selected item
-                self.listbox.insert(self.listbox.curselection()[0]+1, f' {self.entry.get()}')
+                self.listbox.insert(self.listbox.curselection()[0]+1, self.entry.get())
             else:
                 # add the item at the end
-                self.listbox.insert(END, f' {self.entry.get()}')
+                self.listbox.insert(END, self.entry.get())
             # clear the entry box
             self.entry.delete(0, END)
         else:
@@ -62,7 +67,12 @@ class ToDoList():
     def done(self, e):
         # cross out an item
         if self.listbox.curselection():
-            self.listbox.itemconfigure(self.listbox.curselection(), fg='#B2BEB5')
+            if self.listbox.itemcget(self.listbox.curselection(), 'fg') == '#B2BEB5':
+                # uncross an item
+                self.listbox.itemconfigure(self.listbox.curselection(), fg='black')
+            else:
+                # cross out an item
+                self.listbox.itemconfigure(self.listbox.curselection(), fg='#B2BEB5')
             self.listbox.selection_clear(self.listbox.curselection())
 
     def clear(self):
@@ -75,7 +85,6 @@ class ToDoList():
         
         # checking if the name if not blank
         if self.file_name:
-
             # showing the name of the file on root title
             name = self.file_name.split('/')[-1]
             self.root.title(f'{name} - ToDo List')
@@ -85,8 +94,8 @@ class ToDoList():
                 items = self.listbox.get(0, END)
                 for item in items:
                     if self.listbox.itemcget(items.index(item), 'fg') == '#B2BEB5':
-                        item = item.strip()+'$'
-                    file.write(item.strip()+'\n')
+                        item = item +'$'
+                    file.write(item +'\n')
 
     def save(self):
         # calling save as function if the file is untitled
@@ -98,7 +107,31 @@ class ToDoList():
                 items = self.listbox.get(0, END)
                 for item in items:
                     if self.listbox.itemcget(items.index(item), 'fg') == '#B2BEB5':
-                        item = item.strip()+'$'
-                    file.write(item.strip()+'\n')
+                        item = item +'$'
+                    file.write(item +'\n')
+
+    def open_file(self):
+        # asking the file name
+        self.file_name = filedialog.askopenfilename(filetypes=(('Text Files', '*.txt'), ('All Files', '*.*')))
+        
+        # checking if the file name is not blank
+        if self.file_name:
+            # deleting what is already in the listbox
+            self.listbox.delete(0, END)
+
+            # checking the name in title bar
+            name = self.file_name.split('/')[-1]
+            self.root.title(f'{name} - Notepad')
+
+            # opening the file and showing the content on listbox
+            with open(self.file_name, 'r') as file:
+                for i in file.readlines():
+                    # checking for the crossed items in list
+                    if '$' in i:
+                        self.listbox.insert(END, i[:-2])
+                        items = self.listbox.get(0, END)
+                        self.listbox.itemconfigure(items.index(i[:-2]), fg='#B2BEB5')
+                    else:
+                        self.listbox.insert(END, i[:-1])
 
 ToDoList().app()
